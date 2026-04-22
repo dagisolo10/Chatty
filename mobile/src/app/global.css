@@ -1,0 +1,120 @@
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css";
+@import "nativewind/theme";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+    --dead-zone: #030712;
+
+    --primary: #4f7cff;
+    --primary-foreground: #ffffff;
+
+    --accent: #24c8ff;
+    --accent-foreground: #ffffff;
+
+    --success: #16a34a;
+    --success-foreground: #ffffff;
+
+    --destructive: #e35454;
+    --destructive-foreground: #ffffff;
+
+    --background: #f8fafc;
+    --foreground: #081126;
+
+    --muted: #e2e8f0;
+    --muted-foreground: #334155;
+
+    --card: hsl(0 0% 100% / 0.85);
+    --card-foreground: #081126;
+
+    --gray: hsl(215 16% 42%);
+
+    --border: hsl(215 28% 17% / 0.08);
+}
+
+.dark {
+    --primary: #5b7cff;
+    --primary-foreground: #ffffff;
+
+    --accent: #12c9ff;
+    --accent-foreground: #03131a;
+
+    --success: #16a34a;
+    --success-foreground: #ffffff;
+
+    --destructive: #e35454;
+    --destructive-foreground: #ffffff;
+
+    --background: #060816;
+    --foreground: #f7fbff;
+
+    --muted: #0d1328;
+    --muted-foreground: #94a3b8;
+
+    --card: hsl(222 43% 12% / 0.88);
+    --card-foreground: #ffffff;
+
+    --gray: #7f8ba8;
+
+    --border: hsl(215 32% 24% / 0.8);
+}
+
+@theme inline {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+
+    --color-dead-zone: var(--dead-zone);
+
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+
+    --color-success: var(--success);
+    --color-success-foreground: var(--success-foreground);
+
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+
+    --color-gray: var(--gray);
+    --color-border: var(--border);
+
+    --font-sans: sans-regular;
+    --font-light: sans-light;
+    --font-medium: sans-medium;
+    --font-semibold: sans-semibold;
+    --font-bold: sans-bold;
+    --font-extrabold: sans-extrabold;
+
+    --text-h1: 2em;
+}
+
+@layer components {
+    .h1 {
+        @apply text-5xl font-bold;
+    }
+    .h2 {
+        @apply text-4xl font-bold;
+    }
+    .h3 {
+        @apply text-3xl font-bold;
+    }
+    .screen-shell {
+        @apply bg-background flex-1;
+    }
+    .glass-card {
+        @apply bg-card border-border rounded-[28px] border;
+    }
+    .row {
+        @apply flex-row items-center;
+    }
+}

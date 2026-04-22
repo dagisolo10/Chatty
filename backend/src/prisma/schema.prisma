@@ -1,0 +1,73 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+model User {
+    id           String    @id
+    name         String
+    username     String    @unique
+    profile      String?
+    bio          String?
+    members      Member[]
+    messages     Message[]
+    lastOnlineAt DateTime  @default(now())
+    createdAt    DateTime  @default(now())
+}
+
+model Member {
+    id         String   @id @default(uuid())
+    role       Role     @default(Member)
+    userId     String
+    roomId     String
+    lastReadAt DateTime @default(now())
+
+    user      User     @relation(fields: [userId], references: [id])
+    room      Room     @relation(fields: [roomId], references: [id])
+    createdAt DateTime @default(now())
+
+    @@unique([userId, roomId])
+}
+
+model Room {
+    id            String    @id @default(uuid())
+    name          String?
+    inviteCode    String?   @unique
+    type          RoomType  @default(Private)
+    lastMessage   String?
+    lastMessageAt DateTime?
+    members       Member[]
+    messages      Message[]
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt
+}
+
+model Message {
+    id          String      @id @default(uuid())
+    message     String
+    messageType MessageType
+    roomId      String
+    senderId    String
+    user        User        @relation(fields: [senderId], references: [id])
+    room        Room        @relation(fields: [roomId], references: [id])
+    createdAt   DateTime    @default(now())
+}
+
+enum MessageType {
+    Text
+    Image
+    Video
+}
+
+enum RoomType {
+    Private
+    Group
+}
+
+enum Role {
+    Admin
+    Member
+}

@@ -1,4 +1,5 @@
 {
     "files.autoSave": "off",
-    "cSpell.words": ["neondatabase", "TOTP"]
+    // "files.autoSaveDelay": 3000,
+    "cSpell.words": ["chatbubble", "neondatabase", "TOTP"]
 }

@@ -9,28 +9,22 @@
     --dead-zone: #191921;
 
     --primary: #4f7cff;
-    --primary-foreground: #ffffff;
-
     --accent: #ea7a53;
-    --accent-foreground: #ffffff;
-
     --success: #16a34a;
-    --success-foreground: #ffffff;
-
     --destructive: #e35454;
+
+    --card-foreground: #081126;
+    --muted-foreground: #334155;
+    --accent-foreground: #ffffff;
+    --primary-foreground: #ffffff;
+    --success-foreground: #ffffff;
     --destructive-foreground: #ffffff;
 
     --background: #f8fafc;
     --foreground: #081126;
 
+    --card: hsl(48, 68%, 89%);
     --muted: #e2e8f0;
-    --muted-foreground: #334155;
-
-    --card: hsl(48, 68, 89);
-    --card-foreground: #081126;
-
-    --gray: hsl(215 16% 42%);
-
     --border: hsl(215 28% 17% / 0.08);
 }
 
@@ -94,13 +88,13 @@
 
 @layer components {
     .h1 {
-        @apply text-5xl leading-0.5 font-bold;
+        @apply text-5xl leading-tight font-bold;
     }
     .h2 {
-        @apply text-4xl leading-0.5 font-bold;
+        @apply text-4xl leading-tight font-bold;
     }
     .h3 {
-        @apply text-3xl leading-0.5 font-bold;
+        @apply text-3xl leading-tight font-bold;
     }
     .row {
         @apply flex-row items-center;

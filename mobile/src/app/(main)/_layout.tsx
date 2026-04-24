@@ -6,6 +6,7 @@ import { ScreenSkeleton } from "@/components/ui/skeleton";
 
 export default function MainLayout() {
     const { isSignedIn } = useAuthStore();
+    // const { isLoaded } = useAuth();
     const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
     useEffect(() => {

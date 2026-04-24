@@ -1,5 +1,6 @@
 import "@/app/global.css";
 
+import { cn } from "@/lib/utils";
 import { Stack } from "expo-router";
 import useTheme from "@/store/theme-store";
 import { ReactNode, useEffect } from "react";
@@ -18,13 +19,13 @@ if (!token) throw new Error("Add token to the .env file");
 
 export default function RootLayout() {
     const { isDark } = useTheme();
-    const appBackground = isDark ? "#081327" : "#f3f7ff";
+    // const appBackground = isDark ? "#081327" : "#f3f7ff";
 
     return (
         <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
             <AuthBootstrap>
                 <ThemeComponent isDark={isDark}>
-                    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: appBackground } }} />
+                    <Stack screenOptions={{ headerShown: false }} />
                 </ThemeComponent>
             </AuthBootstrap>
         </ClerkProvider>
@@ -74,11 +75,5 @@ export function AuthBootstrap({ children }: { children: ReactNode }) {
 }
 
 function ThemeComponent({ children, isDark }: { children: ReactNode; isDark: boolean }) {
-    const appBackground = isDark ? "#081327" : "#f3f7ff";
-
-    return (
-        <View className={isDark ? "dark" : ""} style={{ flex: 1, backgroundColor: appBackground }}>
-            {children}
-        </View>
-    );
+    return <View className={cn(isDark ? "dark" : "", "flex-1")}>{children}</View>;
 }

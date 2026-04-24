@@ -1,9 +1,8 @@
-import GoogleIcon from "../icons/google";
-import { Button } from "../ui/interactive";
-import { View, Text } from "../ui/display";
-
 import { useRouter } from "expo-router";
 import { Alert, Platform } from "react-native";
+import GoogleIcon from "@/components/icons/google";
+import { Button } from "@/components/ui/interactive";
+import { View, Text } from "@/components/ui/display";
 import { useSignInWithGoogle } from "@clerk/expo/google";
 
 interface GoogleSignInButtonProps {
@@ -32,10 +31,12 @@ export function GoogleSignInButton({ onSignInComplete }: GoogleSignInButtonProps
                 }
             }
         } catch (err: any) {
-            if (err.code === "SIGN_IN_CANCELLED" || err.code === "-5") return;
+            const code = (err as { code?: string })?.code;
+            if (code === "SIGN_IN_CANCELLED" || code === "-5") return;
 
-            Alert.alert("Error", err.message || "An error occurred during Google sign-in");
-            console.error("Sign in with Google error:", JSON.stringify(err.message, null, 2));
+            const message = err instanceof Error ? err.message : "An error occurred during Google sign-in";
+            Alert.alert("Error", message);
+            console.error("Sign in with Google error:", err);
         }
     };
 

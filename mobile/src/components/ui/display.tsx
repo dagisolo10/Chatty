@@ -26,28 +26,34 @@ export const Screen = ({ className, children, nonScrollable = false, onTab = fal
     const behavior = Platform.OS === "ios" ? "padding" : "height";
     const baseStyle = cn("bg-background flex-1 px-6 py-8", className);
 
+    const Container = noSafeArea ? RNView : SafeAreaView;
     const topInset = onTab ? { height: insets.top } : {};
 
-    const content = (
-        <View className={baseStyle} {...props}>
-            {children}
-        </View>
-    );
+    if (nonScrollable) {
+        return (
+            <Container className="bg-background flex-1">
+                <KeyboardAvoidingView behavior={behavior} style={{ flexGrow: 1 }}>
+                    {onTab && <RNView style={topInset} className="bg-dead-zone" />}
+                    <RNView className={baseStyle} {...props}>
+                        {children}
+                    </RNView>
+                </KeyboardAvoidingView>
+            </Container>
+        );
+    }
 
-    const scrollable = (
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled" {...props}>
-            <View className={baseStyle}>{children}</View>
-        </ScrollView>
+    return (
+        <Container className="bg-background flex-1">
+            <KeyboardAvoidingView behavior={behavior} style={{ flexGrow: 1 }}>
+                <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1 }}>
+                    {/* {onTab && <RNView style={topInset} className="bg-dead-zone" />} */}
+                    <RNView className={baseStyle} {...props}>
+                        {children}
+                    </RNView>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </Container>
     );
-
-    const inner = (
-        <KeyboardAvoidingView behavior={behavior} style={{ flexGrow: 1 }}>
-            {onTab && <View style={topInset} className="bg-dead-zone" />}
-            {nonScrollable ? content : scrollable}
-        </KeyboardAvoidingView>
-    );
-
-    return noSafeArea ? inner : <SafeAreaView className="bg-dead-zone flex-1">{inner}</SafeAreaView>;
 };
 
 export const Separator = ({ vertical = false, size = 16 }: { vertical?: boolean; size?: number }) => <View style={{ height: vertical ? size : 0, width: vertical ? 0 : size }} />;

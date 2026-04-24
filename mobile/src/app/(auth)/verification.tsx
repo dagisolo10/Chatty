@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { ActivityIndicator } from "react-native";
 import { useSignIn, useSignUp } from "@clerk/expo";
+import { verificationTexts } from "@/constants/texts";
+import { getClerkError } from "@/lib/helper-functions";
 import { ErrorMessage } from "@/components/ui/screen-ui";
 import { Input, Button } from "@/components/ui/interactive";
 import { Text, Screen, View } from "@/components/ui/display";
@@ -39,13 +41,21 @@ export default function Verification() {
             else if (factorStrategy === "totp") result = await signIn.mfa.verifyTOTP({ code });
             else result = await signIn.mfa.verifyEmailCode({ code });
         } else {
-            result = await signIn.mfa.verifyEmailCode({ code });
+            result = await signIn.emailCode.verifyCode({ code });
         }
 
         if (result?.error) {
-            setError(JSON.stringify(result.error, null, 4));
+            setError(getClerkError(result.error));
         } else if (signIn.status === "complete") {
-            await signIn.finalize({ navigate: ({ session }) => router.replace("/") });
+            await signIn.finalize({
+                navigate: ({ session }) => {
+                    if (session?.currentTask) {
+                        setError(`Additional task required: ${session.currentTask}`);
+                        return;
+                    }
+                    router.replace("/");
+                },
+            });
         }
         setIsLoading(false);
     }
@@ -66,9 +76,21 @@ export default function Verification() {
     const handleVerify = async () => (isSignIn ? signInVerify() : signUpVerify());
 
     function handleNewCode() {
-        if (isSignIn && isSecondFactor && factorStrategy === "phone_code") signIn.mfa.sendPhoneCode();
-        else if (isSignIn) signIn.mfa.sendEmailCode();
-        else signUp.verifications.sendEmailCode();
+        setError(null);
+        try {
+            if (isSignIn) {
+                if (isSecondFactor) {
+                    if (factorStrategy === "phone_code") signIn.mfa.sendPhoneCode();
+                    else signIn.mfa.sendEmailCode();
+                } else {
+                    signIn.emailCode.sendCode();
+                }
+            } else {
+                signUp.verifications.sendEmailCode();
+            }
+        } catch (e) {
+            setError(e instanceof Error ? e.message : "Could not resend code.");
+        }
     }
 
     const vt = verificationTexts(isSignIn, isSecondFactor, useBackupCode, factorStrategy);
@@ -85,8 +107,17 @@ export default function Verification() {
 
             <View className="gap-6">
                 <View className="relative">
-                    <Input className="pl-14" value={code} onChangeText={setCode} placeholder="123456" keyboardType="number-pad" maxLength={isSecondFactor && useBackupCode ? 12 : 6} />
-                    <View className="absolute top-1/2 left-5 -translate-y-1/2">{isSecondFactor ? <ShieldCheck color="#73738c" size={20} /> : <Hash color="#73738c" size={20} />}</View>
+                    <Input
+                        className="pl-14"
+                        value={code}
+                        onChangeText={setCode}
+                        placeholder="123456"
+                        keyboardType="number-pad"
+                        maxLength={isSecondFactor && useBackupCode ? 12 : 6}
+                    />
+                    <View className="absolute top-1/2 left-5 -translate-y-1/2">
+                        {isSecondFactor ? <ShieldCheck color="#73738c" size={20} /> : <Hash color="#73738c" size={20} />}
+                    </View>
                 </View>
 
                 <Button onPress={handleVerify} variant="secondary" disabled={isFetching || !code} component>
@@ -133,25 +164,4 @@ export default function Verification() {
             </View>
         </Screen>
     );
-}
-
-function verificationTexts(isSignIn: boolean, isSecondFactor: boolean, useBackupCode: boolean, factorStrategy: string) {
-    const badgeText = isSecondFactor ? "Security Check" : "Email Verification";
-    const titleText = isSecondFactor ? "Enter Code" : "Check Your Email";
-
-    const subTitle = isSignIn
-        ? isSecondFactor
-            ? useBackupCode
-                ? "Enter one of your emergency backup codes."
-                : factorStrategy === "phone_code"
-                  ? "We sent a secure code via SMS to your phone."
-                  : factorStrategy === "totp"
-                    ? "Enter the 6-digit code from your authenticator app."
-                    : "Check your inbox for the secondary security code."
-            : "We sent a verification code to your email address."
-        : "Activate your account by entering the code sent to your inbox.";
-
-    const canResend = !isSecondFactor || factorStrategy === "email_code" || factorStrategy === "phone_code";
-
-    return { badgeText, titleText, subTitle, canResend };
 }

@@ -2,6 +2,7 @@ import { Text } from "./display";
 
 import { cn } from "@/lib/utils";
 import * as Haptics from "expo-haptics";
+import useTheme from "@/store/theme-store";
 import { Link, LinkProps } from "expo-router";
 import { cva, VariantProps } from "class-variance-authority";
 import { GestureResponderEvent, Pressable, TextInput, TextInputProps, Switch, SwitchProps, PressableProps } from "react-native";
@@ -48,7 +49,16 @@ export const textVariants = {
     link: "text-accent ",
 };
 
-export const Button = ({ variant = "primary", size = "default", children, className, textClassName, onPress, component = false, ...props }: ButtonProps & { component?: boolean }) => {
+export const Button = ({
+    variant = "primary",
+    size = "default",
+    children,
+    className,
+    textClassName,
+    onPress,
+    component = false,
+    ...props
+}: ButtonProps & { component?: boolean }) => {
     const handlePress = (e: GestureResponderEvent) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         onPress?.(e);
@@ -73,7 +83,17 @@ export const navLinkTextVariants = {
     link: "text-accent",
 };
 
-export const NavLink = ({ href, variant = "link", size = "default", children, className, textClassName, onPress, component = false, ...props }: ButtonProps & { href: LinkProps["href"]; component?: boolean }) => {
+export const NavLink = ({
+    href,
+    variant = "link",
+    size = "default",
+    children,
+    className,
+    textClassName,
+    onPress,
+    component = false,
+    ...props
+}: ButtonProps & { href: LinkProps["href"]; component?: boolean }) => {
     const handlePress = (e: GestureResponderEvent) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         onPress?.(e);
@@ -89,7 +109,22 @@ export const NavLink = ({ href, variant = "link", size = "default", children, cl
     );
 };
 
-export const Input = ({ className, ...props }: TextInputProps & { className?: string }) => <TextInput placeholderTextColor="#73738c" className={cn("border-border bg-muted text-foreground caret-muted-foreground h-14 w-full rounded-2xl pr-4 pl-4", className)} {...props} />;
+export const Input = ({ className, ...props }: TextInputProps & { className?: string }) => {
+    const { isDark } = useTheme();
+    const placeholderColor = isDark ? "#73738c" : "#64748b";
+
+    return (
+        <TextInput
+            placeholderTextColor={placeholderColor}
+            className={cn(
+                "border-border bg-muted text-foreground caret-muted-foreground h-14 w-full rounded-2xl pr-4 pl-4",
+                "focus:border-primary/50 focus:bg-secondary",
+                className,
+            )}
+            {...props}
+        />
+    );
+};
 
 export const Toggle = ({ value, onToggle, ...props }: Omit<SwitchProps, "value" | "onValueChange"> & { value?: boolean; onToggle?: (val: boolean) => void }) => (
     <Switch

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "expo-router";
 import { useSignIn } from "@clerk/expo";
 import { ActivityIndicator } from "react-native";
+import { getClerkError } from "@/lib/helper-functions";
 import { ErrorMessage } from "@/components/ui/screen-ui";
 import { Text, Screen, View } from "@/components/ui/display";
 import { Mail, EyeOff, Eye, Lock } from "lucide-react-native";
@@ -25,26 +26,29 @@ export default function SignIn() {
     const [isSigningIn, setIsSigningIn] = useState<boolean>(false);
 
     const handleSignIn = async () => {
+        if (isSigningIn) return;
+
         setIsSigningIn(true);
         setError(null);
-
-        if (isSigningIn) return;
 
         try {
             const { error } = await signIn.password({ emailAddress, password });
 
-            if (error) return setError(JSON.stringify(error, null, 4));
+            if (error) return setError(getClerkError(error));
 
             if (signIn.status === "complete") {
                 await signIn.finalize({
                     navigate: ({ session }) => {
-                        if (session?.currentTask) return console.log(session?.currentTask);
+                        if (session?.currentTask) {
+                            setError(`Additional task required: ${session.currentTask}`);
+                            return;
+                        }
                         router.replace("/");
                     },
                 });
             } else if (signIn.status === "needs_second_factor") {
-                const emailCodeFactor = signIn.supportedSecondFactors.find((factor) => factor.strategy === "email_code");
-                const phoneCodeFactor = signIn.supportedSecondFactors.find((factor) => factor.strategy === "phone_code");
+                const emailCodeFactor = signIn.supportedSecondFactors?.find((factor) => factor.strategy === "email_code");
+                const phoneCodeFactor = signIn.supportedSecondFactors?.find((factor) => factor.strategy === "phone_code");
 
                 if (emailCodeFactor) {
                     await signIn.mfa.sendEmailCode();
@@ -71,7 +75,13 @@ export default function SignIn() {
             </View>
 
             <View className="relative">
-                <Input className={cn("pl-14", !true ? "border-destructive/70 border" : "")} value={emailAddress} onChangeText={setEmailAddress} placeholder="name@domain.com" autoCapitalize="none" />
+                <Input
+                    className={cn("pl-14", !true ? "border-destructive/70 border" : "")}
+                    value={emailAddress}
+                    onChangeText={setEmailAddress}
+                    placeholder="name@domain.com"
+                    autoCapitalize="none"
+                />
                 <View className="absolute top-1/2 left-4 -translate-y-1/2">
                     <Mail color={!true ? "#e35454bf" : "#73738c"} size={18} />
                 </View>
@@ -80,12 +90,23 @@ export default function SignIn() {
             <ErrorMessage message={errors.fields.identifier?.message} />
 
             <View className="relative">
-                <Input className={cn("pl-14", !true ? "border-destructive/70 border" : "")} value={password} onChangeText={setPassword} placeholder="Min. 8 characters" secureTextEntry={!passwordVisible} />
+                <Input
+                    className={cn("pl-14", !true ? "border-destructive/70 border" : "")}
+                    value={password}
+                    onChangeText={setPassword}
+                    placeholder="Min. 8 characters"
+                    secureTextEntry={!passwordVisible}
+                />
                 <View className="absolute top-1/2 left-4 -translate-y-1/2">
                     <Lock color={!true ? "#e35454bf" : "#73738c"} size={18} />
                 </View>
 
-                <Button className={cn(password ? "block" : "hidden", "absolute top-1/2 right-2 -translate-y-1/2")} variant={"ghost"} size={"icon"} onPress={() => setPasswordVisible((visible) => !visible)}>
+                <Button
+                    className={cn(password ? "block" : "hidden", "absolute top-1/2 right-2 -translate-y-1/2")}
+                    variant={"ghost"}
+                    size={"icon"}
+                    onPress={() => setPasswordVisible((visible) => !visible)}
+                >
                     {passwordVisible ? <EyeOff color={"#73738c"} size={16} /> : <Eye color={"#73738c"} size={16} />}
                 </Button>
             </View>
@@ -109,7 +130,7 @@ export default function SignIn() {
                 <GoogleSignInButton />
 
                 <View className="row gap-2 self-center">
-                    <Text className="text-muted-foreground">Don&apos; have an account?</Text>
+                    <Text className="text-muted-foreground">Don&apos;t have an account?</Text>
                     <NavLink href="/(auth)/sign-up">Sign Up</NavLink>
                 </View>
             </View>

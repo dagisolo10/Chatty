@@ -7,8 +7,9 @@ import { ScreenSkeleton } from "@/components/ui/skeleton";
 const TO = 100;
 export default function AuthRoutesLayout() {
     const { isDark } = useTheme();
+    // const { isLoaded } = useAuth();
     const { isSignedIn } = useAuthStore();
-    const [isLoaded, setIsLoaded] = useState<boolean>(false);
+    const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
         setTimeout(() => setIsLoaded(true), TO);

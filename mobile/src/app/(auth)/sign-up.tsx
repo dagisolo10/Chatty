@@ -1,9 +1,11 @@
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import Skeleton from "@/components/ui/skeleton";
 import { ActivityIndicator } from "react-native";
 import { useAuth, useSignUp } from "@clerk/expo";
+import { validatePassword } from "@/lib/password";
+import { getClerkError } from "@/lib/helper-functions";
 import { ErrorMessage } from "@/components/ui/screen-ui";
 import { Text, Screen, View } from "@/components/ui/display";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react-native";
@@ -14,6 +16,8 @@ import PasswordRequirements from "@/components/auth/password-requirement";
 const token = process.env.EXPO_PUBLIC_TOKEN!;
 
 if (!token) throw new Error("Add token to the .env file");
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function SignUp() {
     const router = useRouter();
@@ -31,6 +35,7 @@ export default function SignUp() {
     const [submitted, setSubmitted] = useState(false);
     const [passwordRequirements, setPasswordRequirements] = useState({ oneSpecialCharErr: false, passwordLengthErr: false, atLeastOneNumberErr: false });
 
+    const emailError = submitted && !EMAIL_REGEX.test(emailAddress);
     const passwordError = passwordRequirements.atLeastOneNumberErr || passwordRequirements.oneSpecialCharErr || passwordRequirements.passwordLengthErr;
 
     async function handleSignUp() {
@@ -39,13 +44,13 @@ export default function SignUp() {
 
         if (passwordError || !emailAddress) return;
 
-        setIsSigningUp(true);
         if (isSigningUp) return;
+        setIsSigningUp(true);
 
         try {
             const { error } = await signUp.password({ emailAddress, password });
-            if (error) return setError(JSON.stringify(error, null, 4));
-            if (!error) await signUp.verifications.sendEmailCode();
+            if (error) return setError(getClerkError(error));
+            await signUp.verifications.sendEmailCode();
             router.push("/(auth)/verification?type=sign-up");
         } finally {
             setIsSigningUp(false);
@@ -55,16 +60,26 @@ export default function SignUp() {
     const handlePasswordChange = (val: string) => {
         setPassword(val);
         setSubmitted(false);
-        setPasswordRequirements({
-            passwordLengthErr: val.length < 8,
-            atLeastOneNumberErr: !/\d/.test(val),
-            oneSpecialCharErr: !/[!@#$%^&*(),.?":{}|<>]/.test(val),
-        });
+        setPasswordRequirements(validatePassword(val));
     };
 
-    if (signUp.status === "complete" || !isSignedIn) return <Skeleton />;
+    const handleEmailChange = (val: string) => {
+        setEmailAddress(val);
+        if (submitted) setSubmitted(false);
+    };
 
-    if (signUp.status === "missing_requirements" && signUp.unverifiedFields.includes("email_address") && signUp.missingFields.length === 0) return router.push("/(auth)/verification?type=sign-up");
+    useEffect(() => {
+        if (signUp?.status === "missing_requirements" && signUp.unverifiedFields.includes("email_address") && signUp.missingFields.length === 0) {
+            router.replace("/(auth)/verification?type=sign-up");
+        }
+    }, [signUp?.status, signUp?.unverifiedFields, signUp?.missingFields, router]);
+
+    if (isSignedIn) {
+        router.replace("/");
+        return <Skeleton />;
+    }
+
+    if (signUp.status === "complete") return <Skeleton />;
 
     return (
         <Screen noSafeArea onTab className="justify-center gap-8">
@@ -74,9 +89,9 @@ export default function SignUp() {
             </View>
 
             <View className="relative">
-                <Input className={cn("pl-14", !true ? "border-destructive/70 border" : "")} value={emailAddress} onChangeText={setEmailAddress} placeholder="name@domain.com" autoCapitalize="none" />
+                <Input className={cn("pl-14", emailError ? "border-destructive/70 border" : "")} value={emailAddress} onChangeText={(val) => handleEmailChange(val)} placeholder="name@domain.com" autoCapitalize="none" />
                 <View className="absolute top-1/2 left-4 -translate-y-1/2">
-                    <Mail color={!true ? "#e35454bf" : "#73738c"} size={18} />
+                    <Mail color={emailError ? "#e35454bf" : "#73738c"} size={18} />
                 </View>
             </View>
 
@@ -112,8 +127,6 @@ export default function SignUp() {
                 <View className="row gap-2 self-center">
                     <Text className="text-muted-foreground">Already have an account?</Text>
                     <NavLink href="/(auth)/sign-in">Sign In</NavLink>
-
-                    <NavLink href="/(auth)/verification">Verification</NavLink>
                 </View>
             </View>
         </Screen>

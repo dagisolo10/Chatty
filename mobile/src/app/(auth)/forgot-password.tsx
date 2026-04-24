@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "expo-router";
 import { useSignIn } from "@clerk/expo";
 import { ActivityIndicator } from "react-native";
+import { getClerkError } from "@/lib/helper-functions";
 import { ErrorMessage } from "@/components/ui/screen-ui";
 import { Text, Screen, View } from "@/components/ui/display";
 import { Mail, Lock, Hash, Eye, EyeOff } from "lucide-react-native";
@@ -38,19 +39,19 @@ export default function ForgotPassword() {
         try {
             const { error: createError } = await signIn.create({ identifier: email });
             if (createError) {
-                setError(JSON.stringify(createError, null, 4));
+                setError(getClerkError(createError));
                 setIsLoading(false);
                 return;
             }
 
             const { error: sendCodeError } = await signIn.resetPasswordEmailCode.sendCode();
             if (sendCodeError) {
-                setError(JSON.stringify(sendCodeError, null, 4));
+                setError(getClerkError(sendCodeError));
             } else {
                 setCodeSent(true);
             }
         } catch (err: any) {
-            setError(err.errors?.[0]?.longMessage || "Something went wrong");
+            setError(getClerkError(err));
         } finally {
             setIsLoading(false);
         }
@@ -68,7 +69,7 @@ export default function ForgotPassword() {
             const { error: verifyError } = await signIn.resetPasswordEmailCode.verifyCode({ code });
 
             if (verifyError) {
-                setError(JSON.stringify(verifyError, null, 4));
+                setError(getClerkError(verifyError));
                 setIsLoading(false);
                 return;
             }
@@ -76,12 +77,12 @@ export default function ForgotPassword() {
             const { error: submitError } = await signIn.resetPasswordEmailCode.submitPassword({ password });
 
             if (submitError) {
-                setError(JSON.stringify(submitError, null, 4));
+                setError(getClerkError(submitError));
             } else if (signIn.status === "complete") {
                 setResetComplete(true);
             }
         } catch (err: any) {
-            setError(err.errors?.[0]?.longMessage || "Invalid code or reset failed");
+            setError(getClerkError(err));
         } finally {
             setIsLoading(false);
         }
@@ -96,6 +97,7 @@ export default function ForgotPassword() {
             oneSpecialCharErr: !/[!@#$%^&*(),.?":{}|<>]/.test(val),
         });
     };
+
     if (resetComplete) {
         return (
             <Screen noSafeArea onTab className="items-center justify-center gap-10 px-6">
@@ -121,6 +123,7 @@ export default function ForgotPassword() {
             </Screen>
         );
     }
+
     return (
         <Screen noSafeArea onTab className="justify-center gap-8">
             <View>
@@ -128,7 +131,8 @@ export default function ForgotPassword() {
                 <Text className="h1">{codeSent ? "Password." : "Password?"}</Text>
                 <Text className="text-muted-foreground mt-2">{codeSent ? "Check your email for the 6-digit verification code." : "Enter your email and we'll send you a reset code."}</Text>
             </View>
-            {!codeSent ? (
+
+            {codeSent ? (
                 <View className="gap-6">
                     <View className="relative">
                         <Input className="pl-14" value={code} onChangeText={setCode} placeholder="6-digit code" keyboardType="number-pad" />
@@ -168,13 +172,7 @@ export default function ForgotPassword() {
                             <Mail color="#73738c" size={18} />
                         </View>
                     </View>
-                    <Button onPress={onRequestReset} variant="secondary" disabled={!email || isLoading} component>
-                        <View className="row gap-4">
-                            {isLoading && <ActivityIndicator color="#fff" />}
 
-                            <Text className="text-xl font-bold">Send Code</Text>
-                        </View>
-                    </Button>
                     <Button onPress={onRequestReset} variant="secondary" disabled={!email || isLoading || fetchStatus === "fetching"}>
                         <View className="row gap-4">
                             {(isLoading || fetchStatus === "fetching") && <ActivityIndicator color="#fff" />}
@@ -182,7 +180,6 @@ export default function ForgotPassword() {
                             <Text className="text-xl font-bold">Send Code</Text>
                         </View>
                     </Button>
-                    ;
                 </View>
             )}
 

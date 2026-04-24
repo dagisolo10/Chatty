@@ -2,10 +2,12 @@ export const getClerkError = (err: any): string => err?.errors?.[0]?.longMessage
 
 export const formatTime = (date: string | Date) => new Date(date).toLocaleTimeString();
 
-export function sanitizeUsername(value: string) {
+export function sanitizeUsername(value: string): string {
     return value
         .toLowerCase()
         .replace(/\s+/g, "_")
         .replace(/[^a-z0-9._]/g, "")
+        .replace(/[._]{2,}/g, (m) => m.charAt(0))
+        .replace(/^[._]+|[._]+$/g, "")
         .slice(0, 24);
 }

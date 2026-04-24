@@ -8,7 +8,7 @@ export interface MessageResponse {
 
 export interface UserResponse {
     data: User;
-    error: string | null;
+    error?: string;
     success: boolean;
 }
 

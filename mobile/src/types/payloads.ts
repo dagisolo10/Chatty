@@ -16,8 +16,8 @@ export interface CreateRoomPayload {
 export interface CreateUserPayload {
     name: string;
     username: string;
-    bio?: string | undefined;
-    profile?: string | undefined;
+    bio?: string;
+    profile?: string;
 }
 
 export interface UpdateUserPayload {

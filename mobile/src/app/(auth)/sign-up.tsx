@@ -129,7 +129,7 @@ export default function SignUp() {
                     onPress={() => setPasswordVisible((visible) => !visible)}
                     className={cn(password ? "block" : "hidden", "absolute top-1/2 right-2 -translate-y-1/2")}
                 >
-                    {passwordVisible ? <EyeOff color={"#73738c"} size={16} /> : <Eye color={"#73738c"} size={16} />}
+                    {passwordVisible ? <EyeOff color={mutedForeground} size={16} /> : <Eye color={mutedForeground} size={16} />}
                 </Button>
             </View>
 

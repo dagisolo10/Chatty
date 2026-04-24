@@ -35,6 +35,12 @@ export default function Onboarding() {
 
     async function pickImage() {
         try {
+            const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (!perm.granted) {
+                setError("Photo library access was denied. Please enable it in settings.");
+                return;
+            }
+
             const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: "images", allowsEditing: true, aspect: [1, 1], quality: 0.5 });
             if (!res.canceled) {
                 setProfile(res.assets[0].uri);
@@ -66,7 +72,7 @@ export default function Onboarding() {
             const token = await getToken();
             if (!token) return setError("Your session has expired. Please sign in again.");
 
-            const payload: CreateUserPayload = { name, username, profile: profile || undefined, bio: bio.trim() || undefined };
+            const payload: CreateUserPayload = { name: name.trim(), username, profile: profile || undefined, bio: bio.trim() || undefined };
             const auth = { headers: { Authorization: `Bearer ${token}` } };
 
             const res = await api.post<UserResponse>("/auth/sync", payload, auth);
@@ -82,8 +88,11 @@ export default function Onboarding() {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             router.replace("/");
         } catch (err: any) {
-            console.error("Onboarding sync failed:", err?.error);
-            setError(err?.error);
+            const apiError = err?.response?.data?.error;
+            const message = apiError || err?.message || "Something went wrong. Please try again.";
+            console.error("Onboarding sync failed:", message, err);
+            setError(message);
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         } finally {
             setSubmitting(false);
         }
@@ -96,9 +105,10 @@ export default function Onboarding() {
     }
 
     function handleUserNameChange(val: string) {
+        const sanitized = sanitizeUsername(val);
         setSubmitted(false);
-        setUsername(sanitizeUsername(val));
-        setFormError((prev) => ({ ...prev, usernameErr: sanitizeUsername(val).trim().length < 3 }));
+        setUsername(sanitized);
+        setFormError((prev) => ({ ...prev, usernameErr: sanitized.length < 3 }));
     }
 
     const inputErrStyle = {

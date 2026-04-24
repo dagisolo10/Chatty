@@ -35,14 +35,14 @@ export default function RootLayout() {
 }
 
 export function AuthBootstrap({ children }: { children: ReactNode }) {
-    const { getToken, isLoaded } = useAuth();
+    const { getToken, isLoaded, isSignedIn } = useAuth();
 
     // const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
     const user = useAuthStore((state) => state.user);
     const getUser = useAuthStore((state) => state.getUser);
     const clearUser = useAuthStore((state) => state.clearUser);
-    const isSignedIn = useAuthStore((state) => state.isSignedIn);
+    // const isSignedIn = useAuthStore((state) => state.isSignedIn);
 
     // useEffect(() => {
     //     setTimeout(() => setIsLoaded(true), 100);

@@ -1,15 +1,17 @@
-import { useEffect } from "react";
+import { useAuth } from "@clerk/expo";
+import { Redirect, Stack } from "expo-router";
 import useAuthStore from "@/store/auth-store";
-import { Stack, useRouter } from "expo-router";
+import Skeleton from "@/components/ui/skeleton";
 
 export default function OnboardingLayout() {
-    const router = useRouter();
     const { user, loading } = useAuthStore();
+    const { isSignedIn, isLoaded } = useAuth();
 
-    useEffect(() => {
-        if (loading) return;
-        if (user) router.replace("/(main)");
-    }, [loading, router, user]);
+    if (!isLoaded || loading) return <Skeleton />;
+
+    if (!isSignedIn) return <Redirect href="/(auth)/sign-up" />;
+
+    if (user) return <Redirect href="/(main)" />;
 
     return <Stack screenOptions={{ headerShown: false }} />;
 }

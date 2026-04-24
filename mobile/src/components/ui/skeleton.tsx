@@ -1,9 +1,27 @@
-import { Card, Screen, View } from "./display";
-
 import { Animated } from "react-native";
 import { useEffect, useRef } from "react";
+import { Card, Screen, View } from "@/components/ui/display";
 
 export type ScreenSkeletonTag = "app-shell" | "sign-in" | "sign-up" | "verification" | "home" | "chat" | "onboarding";
+
+export default function Skeleton() {
+    return (
+        <Screen className="justify-center gap-6">
+            <Card className="gap-4">
+                <SkeletonBlock className="bg-primary h-8 w-28 rounded-full" />
+                <SkeletonBlock className="bg-accent h-12 w-56 rounded-2xl" />
+                <SkeletonBlock className="bg-accent h-5 w-10/12 rounded-xl" />
+                <SkeletonBlock className="bg-accent h-5 w-full rounded-xl" />
+            </Card>
+
+            <Card className="gap-4">
+                <SkeletonBlock className="bg-accent h-6 w-40 rounded-xl" />
+                <SkeletonBlock className="bg-accent h-24 w-full rounded-2xl" />
+                <SkeletonBlock className="bg-primary h-14 w-full rounded-2xl" />
+            </Card>
+        </Screen>
+    );
+}
 
 function SkeletonBlock({ className }: { className?: string }) {
     const opacity = useRef(new Animated.Value(0.45)).current;

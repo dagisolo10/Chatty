@@ -2,7 +2,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { styled } from "nativewind";
 import { cva, VariantProps } from "class-variance-authority";
-import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView as RNSafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { KeyboardAvoidingView, Platform, Text as RNText, View as RNView, ScrollView, TextProps, ViewProps } from "react-native";
 
 interface ThemedViewProps extends ViewProps {
@@ -16,37 +16,44 @@ interface TypographyProps extends TextProps {
 interface ScreenProps extends ThemedViewProps {
     nonScrollable?: boolean;
     noSafeArea?: boolean;
+    onTab?: boolean;
 }
 
 const SafeAreaView = styled(RNSafeAreaView);
 
-export const Screen = ({ className, children, nonScrollable = false, noSafeArea = false, ...props }: ScreenProps) => {
-    // const headerHeight = useHeaderHeight();
+export const Screen = ({ className, children, nonScrollable = false, onTab = false, noSafeArea = false, ...props }: ScreenProps) => {
+    const insets = useSafeAreaInsets();
     const behavior = Platform.OS === "ios" ? "padding" : "height";
-    const baseStyle = cn("screen-shell bg-background flex-1 px-6 py-8", className);
+    const baseStyle = cn("bg-background flex-1 px-6 py-8", className);
 
-    const verticalOffset = 0; //headerHeight - 128; //Platform.OS === "ios" ? headerHeight : headerHeight + (StatusBar.currentHeight ?? 0);
+    const Container = noSafeArea ? RNView : SafeAreaView;
+    const topInset = onTab && noSafeArea ? { height: insets.top } : {};
 
-    const content = <View className={baseStyle}>{children}</View>;
-    const contentWithProps = (
-        <View className={baseStyle} {...props}>
-            {children}
-        </View>
+    if (nonScrollable) {
+        return (
+            <Container className="bg-background flex-1">
+                <KeyboardAvoidingView behavior={behavior} style={{ flexGrow: 1 }}>
+                    {onTab && <RNView style={topInset} className="bg-dead-zone" />}
+                    <RNView className={baseStyle} {...props}>
+                        {children}
+                    </RNView>
+                </KeyboardAvoidingView>
+            </Container>
+        );
+    }
+
+    return (
+        <Container className="bg-background flex-1">
+            <KeyboardAvoidingView behavior={behavior} style={{ flexGrow: 1 }}>
+                <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1 }}>
+                    {onTab && <RNView style={topInset} className="bg-dead-zone" />}
+                    <RNView className={baseStyle} {...props}>
+                        {children}
+                    </RNView>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </Container>
     );
-
-    const scrollable = (
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled" {...props}>
-            {content}
-        </ScrollView>
-    );
-
-    const inner = (
-        <KeyboardAvoidingView behavior={behavior} style={{ flex: 1 }} keyboardVerticalOffset={verticalOffset}>
-            {nonScrollable ? contentWithProps : scrollable}
-        </KeyboardAvoidingView>
-    );
-
-    return noSafeArea ? inner : <SafeAreaView className="bg-dead-zone flex-1">{inner}</SafeAreaView>;
 };
 
 export const Separator = ({ vertical = false, size = 16 }: { vertical?: boolean; size?: number }) => <View style={{ height: vertical ? size : 0, width: vertical ? 0 : size }} />;
@@ -55,9 +62,9 @@ export const View = ({ className, ...props }: ThemedViewProps) => <RNView classN
 const cardVariants = cva("", {
     variants: {
         variant: {
-            default: "glass-card p-5",
+            default: "rounded-3xl border border-border bg-card p-5",
             primary: "rounded-3xl border border-primary/30 bg-primary/20 p-5",
-            accent: "rounded-[30px] border border-accent/30 bg-accent/12 p-6",
+            accent: "rounded-3xl border border-accent/30 bg-accent/12 p-6",
             muted: "rounded-3xl border border-border bg-muted/90 p-6",
         },
     },
@@ -72,7 +79,7 @@ export const Card = ({ variant = "default", className, ...props }: CardProps) =>
 
 export const Field = ({ label, children, className }: { label: string; children: React.ReactNode; className?: string }) => (
     <View className={cn(className)}>
-        <RNText className="text-gray mb-2 text-xs font-bold tracking-[2px] uppercase">{label}</RNText>
+        <RNText className="text-muted-foreground mb-2 text-sm font-bold tracking-[2px] uppercase">{label}</RNText>
         {children}
     </View>
 );

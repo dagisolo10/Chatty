@@ -39,8 +39,6 @@ export async function getUser(req: Request, res: Response) {
 
         if (!id) throw new Error("Unauthorized. Login First");
 
-        console.log({ userId: id });
-
         const user = await prisma.user.findUnique({ where: { id } });
 
         if (!user) throw new Error("User not found");

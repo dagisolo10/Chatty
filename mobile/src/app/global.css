@@ -6,59 +6,47 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-    --dead-zone: #030712;
+    --dead-zone: #191921;
 
     --primary: #4f7cff;
-    --primary-foreground: #ffffff;
-
-    --accent: #24c8ff;
-    --accent-foreground: #ffffff;
-
+    --accent: #ea7a53;
     --success: #16a34a;
-    --success-foreground: #ffffff;
-
     --destructive: #e35454;
+
+    --card-foreground: #081126;
+    --muted-foreground: #334155;
+    --accent-foreground: #ffffff;
+    --primary-foreground: #ffffff;
+    --success-foreground: #ffffff;
     --destructive-foreground: #ffffff;
 
     --background: #f8fafc;
     --foreground: #081126;
 
+    --card: hsl(48, 68%, 89%);
     --muted: #e2e8f0;
-    --muted-foreground: #334155;
-
-    --card: hsl(0 0% 100% / 0.85);
-    --card-foreground: #081126;
-
-    --gray: hsl(215 16% 42%);
-
     --border: hsl(215 28% 17% / 0.08);
 }
 
 .dark {
     --primary: #5b7cff;
-    --primary-foreground: #ffffff;
-
-    --accent: #12c9ff;
-    --accent-foreground: #03131a;
-
-    --success: #16a34a;
-    --success-foreground: #ffffff;
-
+    --accent: #ff6569;
+    --success: #00bc7d;
     --destructive: #e35454;
+
+    --card-foreground: #ffffff;
+    --muted-foreground: #73738c;
+    --accent-foreground: #ffffff;
+    --primary-foreground: #ffffff;
+    --success-foreground: #ffffff;
     --destructive-foreground: #ffffff;
 
-    --background: #060816;
-    --foreground: #f7fbff;
+    --background: #191921;
+    --foreground: #ffffff;
 
-    --muted: #0d1328;
-    --muted-foreground: #94a3b8;
-
-    --card: hsl(222 43% 12% / 0.88);
-    --card-foreground: #ffffff;
-
-    --gray: #7f8ba8;
-
-    --border: hsl(215 32% 24% / 0.8);
+    --card: #2d2d43;
+    --muted: #23232f;
+    --border: #2e2e3d;
 }
 
 @theme inline {
@@ -100,19 +88,13 @@
 
 @layer components {
     .h1 {
-        @apply text-5xl font-bold;
+        @apply text-5xl leading-tight font-bold;
     }
     .h2 {
-        @apply text-4xl font-bold;
+        @apply text-4xl leading-tight font-bold;
     }
     .h3 {
-        @apply text-3xl font-bold;
-    }
-    .screen-shell {
-        @apply bg-background flex-1;
-    }
-    .glass-card {
-        @apply bg-card border-border rounded-[28px] border;
+        @apply text-3xl leading-tight font-bold;
     }
     .row {
         @apply flex-row items-center;

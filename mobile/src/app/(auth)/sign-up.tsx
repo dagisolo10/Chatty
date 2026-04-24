@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import Skeleton from "@/components/ui/skeleton";
-import useThemeColors from "@/constants/colors";
+import useThemeColors from "@/hooks/use-colors";
 import { ActivityIndicator } from "react-native";
 import { useAuth, useSignUp } from "@clerk/expo";
 import { validatePassword } from "@/lib/password";

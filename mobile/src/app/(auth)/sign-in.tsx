@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import { useSignIn } from "@clerk/expo";
-import useThemeColors from "@/constants/colors";
+import useThemeColors from "@/hooks/use-colors";
 import { ActivityIndicator } from "react-native";
 import { getClerkError } from "@/lib/helper-functions";
 import { ErrorMessage } from "@/components/ui/screen-ui";

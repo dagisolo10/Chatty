@@ -6,7 +6,7 @@ import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import useAuthStore from "@/store/auth-store";
 import { UserResponse } from "@/types/response";
-import useThemeColors from "@/constants/colors";
+import useThemeColors from "@/hooks/use-colors";
 import * as ImagePicker from "expo-image-picker";
 import { CreateUserPayload } from "@/types/payloads";
 import { ActivityIndicator, Image } from "react-native";

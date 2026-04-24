@@ -1,6 +1,6 @@
 import { useAuth } from "@clerk/expo";
 import { Redirect, Stack } from "expo-router";
-import useThemeColors from "@/constants/colors";
+import useThemeColors from "@/hooks/use-colors";
 import { ScreenSkeleton } from "@/components/ui/skeleton";
 
 export default function AuthRoutesLayout() {

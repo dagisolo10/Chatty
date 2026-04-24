@@ -26,7 +26,7 @@ export default function RootLayout() {
                 <ThemeComponent isDark={isDark}>
                     <Stack screenOptions={{ headerShown: false }}>
                         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-                        <Stack.Screen name="(main)" options={{ headerShown: false }} />
+                        <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
                     </Stack>
                 </ThemeComponent>
             </AuthBootstrap>

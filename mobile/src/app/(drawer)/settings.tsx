@@ -16,7 +16,7 @@ export default function Settings() {
     }
 
     return (
-        <Screen noSafeArea onTab className="items-center justify-center gap-8">
+        <Screen onTab className="items-center justify-center gap-8">
             <Text className="h1">Settings</Text>
 
             <Button onPress={logout} variant="primary">

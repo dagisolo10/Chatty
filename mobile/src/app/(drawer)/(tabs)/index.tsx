@@ -18,7 +18,7 @@ export default function Home() {
     if (!user) return <LoadingScreen />;
 
     return (
-        <Screen onTab noSafeArea className="items-center justify-center">
+        <Screen onTab className="items-center justify-center">
             {user.profile && <Image source={{ uri: user.profile }} accessibilityLabel={`${user.name} profile picture`} className="size-36 rounded-full" />}
 
             <Text className="h1">Welcome</Text>
@@ -29,7 +29,7 @@ export default function Home() {
 
             {user.bio && <Text>{user.bio}</Text>}
 
-            <NavLink href="/(main)/settings">Settings</NavLink>
+            <NavLink href="/(drawer)/settings">Settings</NavLink>
         </Screen>
     );
 }

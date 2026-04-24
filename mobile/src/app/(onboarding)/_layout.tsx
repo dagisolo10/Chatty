@@ -1,5 +1,15 @@
-import { Stack } from "expo-router";
+import { useEffect } from "react";
+import useAuthStore from "@/store/auth-store";
+import { Stack, useRouter } from "expo-router";
 
 export default function OnboardingLayout() {
-    return <Stack />;
+    const router = useRouter();
+    const { user, loading } = useAuthStore();
+
+    useEffect(() => {
+        if (loading) return;
+        if (user) router.replace("/(main)");
+    }, [loading, router, user]);
+
+    return <Stack screenOptions={{ headerShown: false }} />;
 }

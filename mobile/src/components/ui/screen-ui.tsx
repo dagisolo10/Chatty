@@ -28,5 +28,5 @@ export function LoadingScreen() {
 
 export function ErrorMessage({ message }: { message?: string | null }) {
     if (!message) return null;
-    return <Text className="text-destructive mt-2 text-sm">{message}</Text>;
+    return <Text className="text-destructive mt-2 text-sm font-bold">{message}</Text>;
 }

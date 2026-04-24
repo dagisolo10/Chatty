@@ -11,6 +11,7 @@ interface Auth {
 
     abortController: AbortController | null;
 
+    setUser: (user: User) => void;
     getUser: (token: string) => Promise<void>;
     clearUser: () => void;
 }
@@ -21,6 +22,10 @@ const useAuthStore = create<Auth>((set, get) => ({
     isSignedIn: false,
     error: null,
     abortController: null,
+
+    setUser: (user: User) => {
+        set((state) => ({ user, isSignedIn: true, error: null }));
+    },
 
     getUser: async (token: string) => {
         const currentController = get().abortController;

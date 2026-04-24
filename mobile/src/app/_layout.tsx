@@ -19,7 +19,6 @@ if (!token) throw new Error("Add token to the .env file");
 
 export default function RootLayout() {
     const { isDark } = useTheme();
-    // const appBackground = isDark ? "#081327" : "#f3f7ff";
 
     return (
         <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
@@ -36,14 +35,14 @@ export default function RootLayout() {
 }
 
 export function AuthBootstrap({ children }: { children: ReactNode }) {
-    const { isLoaded, isSignedIn, getToken } = useAuth();
+    const { getToken, isLoaded } = useAuth();
 
     // const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
     const user = useAuthStore((state) => state.user);
     const getUser = useAuthStore((state) => state.getUser);
     const clearUser = useAuthStore((state) => state.clearUser);
-    // const isSignedIn = useAuthStore((state) => state.isSignedIn);
+    const isSignedIn = useAuthStore((state) => state.isSignedIn);
 
     // useEffect(() => {
     //     setTimeout(() => setIsLoaded(true), 100);

@@ -1,9 +1,11 @@
-import { useClerk } from "@clerk/expo";
+import { useAuth } from "@clerk/expo";
+import useAuthStore from "@/store/auth-store";
 import { Button } from "@/components/ui/interactive";
 import { Screen, Text } from "@/components/ui/display";
 
 export default function Settings() {
-    const { signOut } = useClerk();
+    const { clearUser } = useAuthStore();
+    const { signOut } = useAuth();
 
     async function logout() {
         try {
@@ -14,11 +16,15 @@ export default function Settings() {
     }
 
     return (
-        <Screen noSafeArea onTab className="items-center">
+        <Screen noSafeArea onTab className="items-center justify-center gap-8">
             <Text className="h1">Settings</Text>
 
-            <Button onPress={logout} variant="outline">
+            <Button onPress={logout} variant="primary">
                 Sign out
+            </Button>
+
+            <Button onPress={clearUser} variant="primary">
+                Clear User
             </Button>
         </Screen>
     );

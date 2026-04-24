@@ -43,7 +43,6 @@ export default function SignIn() {
                             setError(`Additional task required: ${session.currentTask}`);
                             return;
                         }
-                        router.replace("/");
                     },
                 });
             } else if (signIn.status === "needs_second_factor") {
@@ -123,7 +122,7 @@ export default function SignIn() {
                     </View>
                 </Button>
 
-                <NavLink href={"/forgot-password"}>Forgot Password?</NavLink>
+                <NavLink href={"/(auth)/forgot-password"}>Forgot Password?</NavLink>
             </View>
 
             <View className="gap-2">

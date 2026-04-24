@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useAuth } from "@clerk/expo";
 import { Redirect, Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import useAuthStore from "@/store/auth-store";
@@ -6,12 +6,12 @@ import { ScreenSkeleton } from "@/components/ui/skeleton";
 
 export default function MainLayout() {
     const { isSignedIn } = useAuthStore();
-    // const { isLoaded } = useAuth();
-    const [isLoaded, setIsLoaded] = useState<boolean>(false);
+    const { isLoaded } = useAuth();
+    // const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
-    useEffect(() => {
-        setTimeout(() => setIsLoaded(true), 100);
-    }, []);
+    // useEffect(() => {
+    //     setTimeout(() => setIsLoaded(true), 100);
+    // }, []);
 
     if (!isLoaded) return <ScreenSkeleton tag="home" />;
 

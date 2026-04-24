@@ -27,7 +27,7 @@ export const Screen = ({ className, children, nonScrollable = false, onTab = fal
     const baseStyle = cn("bg-background flex-1 px-6 py-8", className);
 
     const Container = noSafeArea ? RNView : SafeAreaView;
-    const topInset = onTab ? { height: insets.top } : {};
+    const topInset = onTab && noSafeArea ? { height: insets.top } : {};
 
     if (nonScrollable) {
         return (
@@ -46,7 +46,7 @@ export const Screen = ({ className, children, nonScrollable = false, onTab = fal
         <Container className="bg-background flex-1">
             <KeyboardAvoidingView behavior={behavior} style={{ flexGrow: 1 }}>
                 <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1 }}>
-                    {/* {onTab && <RNView style={topInset} className="bg-dead-zone" />} */}
+                    {onTab && <RNView style={topInset} className="bg-dead-zone" />}
                     <RNView className={baseStyle} {...props}>
                         {children}
                     </RNView>

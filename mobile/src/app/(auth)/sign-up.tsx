@@ -74,12 +74,11 @@ export default function SignUp() {
         }
     }, [signUp?.status, signUp?.unverifiedFields, signUp?.missingFields, router]);
 
-    if (isSignedIn) {
-        router.replace("/");
-        return <Skeleton />;
-    }
+    useEffect(() => {
+        if (isSignedIn) router.replace("/");
+    }, [isSignedIn, router]);
 
-    if (signUp.status === "complete") return <Skeleton />;
+    if (!signUp || isSignedIn || signUp.status === "complete") return <Skeleton />;
 
     return (
         <Screen noSafeArea onTab className="justify-center gap-8">
@@ -89,7 +88,13 @@ export default function SignUp() {
             </View>
 
             <View className="relative">
-                <Input className={cn("pl-14", emailError ? "border-destructive/70 border" : "")} value={emailAddress} onChangeText={(val) => handleEmailChange(val)} placeholder="name@domain.com" autoCapitalize="none" />
+                <Input
+                    className={cn("pl-14", emailError ? "border-destructive/70 border" : "")}
+                    value={emailAddress}
+                    onChangeText={(val) => handleEmailChange(val)}
+                    placeholder="name@domain.com"
+                    autoCapitalize="none"
+                />
                 <View className="absolute top-1/2 left-4 -translate-y-1/2">
                     <Mail color={emailError ? "#e35454bf" : "#73738c"} size={18} />
                 </View>
@@ -98,12 +103,23 @@ export default function SignUp() {
             <ErrorMessage message={errors.fields.emailAddress?.message} />
 
             <View className="relative">
-                <Input className={cn("pl-14", passwordError && isPasswordDirty && submitted ? "border-destructive/70 border" : "")} value={password} onChangeText={(val) => handlePasswordChange(val)} placeholder="Min. 8 characters" secureTextEntry={!passwordVisible} />
+                <Input
+                    className={cn("pl-14", passwordError && isPasswordDirty && submitted ? "border-destructive/70 border" : "")}
+                    value={password}
+                    onChangeText={(val) => handlePasswordChange(val)}
+                    placeholder="Min. 8 characters"
+                    secureTextEntry={!passwordVisible}
+                />
                 <View className="absolute top-1/2 left-4 -translate-y-1/2">
                     <Lock color={passwordError && isPasswordDirty && submitted ? "#e35454bf" : "#73738c"} size={18} />
                 </View>
 
-                <Button className={cn(password ? "block" : "hidden", "absolute top-1/2 right-2 -translate-y-1/2")} variant={"ghost"} size={"icon"} onPress={() => setPasswordVisible((visible) => !visible)}>
+                <Button
+                    className={cn(password ? "block" : "hidden", "absolute top-1/2 right-2 -translate-y-1/2")}
+                    variant={"ghost"}
+                    size={"icon"}
+                    onPress={() => setPasswordVisible((visible) => !visible)}
+                >
                     {passwordVisible ? <EyeOff color={"#73738c"} size={16} /> : <Eye color={"#73738c"} size={16} />}
                 </Button>
             </View>

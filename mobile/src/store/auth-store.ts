@@ -1,7 +1,7 @@
 import api from "@/lib/axios";
 import { create } from "zustand";
 import { isAxiosError } from "axios";
-import { User } from "@/types/response";
+import { User } from "@/types/model";
 
 interface Auth {
     user: User | null;
@@ -24,19 +24,15 @@ const useAuthStore = create<Auth>((set, get) => ({
 
     getUser: async (token: string) => {
         const currentController = get().abortController;
-        if (currentController) {
-            currentController.abort();
-        }
+        if (currentController) currentController.abort();
 
         const newController = new AbortController();
 
+        if (!token) return set(() => ({ user: null, isSignedIn: false, loading: false, error: "Missing auth token.", abortController: null }));
+
         set({ loading: true, error: null, abortController: newController });
 
-        if (!token) return set(() => ({ user: null, isSignedIn: false, loading: false, error: "Missing auth token." }));
-
         try {
-            set(() => ({ loading: true, error: null }));
-
             const auth = { headers: { Authorization: `Bearer ${token}` } };
             const res = await api.get("/auth", {
                 ...auth,
@@ -49,7 +45,8 @@ const useAuthStore = create<Auth>((set, get) => ({
 
             set(() => ({ user: data.data, isSignedIn: true, loading: false, error: null, abortController: null }));
         } catch (err: any) {
-            if (err.name === "CanceledError" || err.name === "AbortError") return;
+            const name = (err as { name?: string } | null)?.name;
+            if (name === "CanceledError" || name === "AbortError") return;
 
             const backendError = isAxiosError(err) ? (err.response?.data as { error?: string } | undefined)?.error : undefined;
             const message =
@@ -60,7 +57,11 @@ const useAuthStore = create<Auth>((set, get) => ({
         }
     },
 
-    clearUser: () => set(() => ({ user: null, loading: false, error: null, isSignedIn: false })),
+    clearUser: () => {
+        const controller = get().abortController;
+        if (controller) controller.abort();
+        set(() => ({ user: null, loading: false, error: null, isSignedIn: false, abortController: null }));
+    },
 }));
 
 export default useAuthStore;

@@ -25,7 +25,10 @@ export default function RootLayout() {
         <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
             <AuthBootstrap>
                 <ThemeComponent isDark={isDark}>
-                    <Stack screenOptions={{ headerShown: false }} />
+                    <Stack screenOptions={{ headerShown: false }}>
+                        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                        <Stack.Screen name="(main)" options={{ headerShown: false }} />
+                    </Stack>
                 </ThemeComponent>
             </AuthBootstrap>
         </ClerkProvider>

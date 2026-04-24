@@ -66,7 +66,7 @@ export default function Verification() {
         const { error: verifyError } = await signUp.verifications.verifyEmailCode({ code });
 
         if (verifyError) {
-            setError(JSON.stringify(verifyError, null, 4));
+            setError(getClerkError(verifyError));
         } else if (signUp.status === "complete") {
             await signUp.finalize({ navigate: () => router.replace("/(onboarding)/onboarding") });
         }

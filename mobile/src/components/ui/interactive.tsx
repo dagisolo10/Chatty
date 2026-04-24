@@ -111,7 +111,7 @@ export const NavLink = ({
 
 export const Input = ({ className, ...props }: TextInputProps & { className?: string }) => {
     const { isDark } = useTheme();
-    const placeholderColor = isDark ? "#73738c" : "#64748b";
+    const placeholderColor = isDark ? "#73738c" : "#334155";
 
     return (
         <TextInput

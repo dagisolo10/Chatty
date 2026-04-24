@@ -116,11 +116,7 @@ export const Input = ({ className, ...props }: TextInputProps & { className?: st
     return (
         <TextInput
             placeholderTextColor={placeholderColor}
-            className={cn(
-                "border-border bg-muted text-foreground caret-muted-foreground h-14 w-full rounded-2xl pr-4 pl-4",
-                "focus:border-primary/50 focus:bg-secondary",
-                className,
-            )}
+            className={cn("border-border bg-muted text-foreground caret-muted-foreground h-14 w-full rounded-2xl pr-4 pl-4", className)}
             {...props}
         />
     );

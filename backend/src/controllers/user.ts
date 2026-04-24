@@ -1,14 +1,20 @@
 import prisma from "@/lib/prisma.js";
+import { createUserPayloadSchema } from "@/lib/user-validation.js";
 import wrapper from "@/util/action-wrapper.js";
 import type { Request, Response } from "express";
 
 export async function syncUser(req: Request, res: Response) {
     const result = await wrapper(async () => {
         const id = req.userId;
-        const { name, username, bio, profile } = req.body;
 
         if (!id) throw new Error("User ID missing from verified token");
 
+        const parsedPayload = createUserPayloadSchema.safeParse(req.body);
+        if (!parsedPayload.success) {
+            throw new Error(parsedPayload.error.issues[0]?.message || "Invalid onboarding payload.");
+        }
+
+        const { name, username, bio, profile } = parsedPayload.data;
         const existingUsername = await prisma.user.findUnique({ where: { username } });
 
         if (existingUsername && existingUsername.id !== id) {
@@ -21,9 +27,17 @@ export async function syncUser(req: Request, res: Response) {
         if (bio !== undefined) updateData.bio = bio;
         if (profile !== undefined) updateData.profile = profile;
 
+        const createData = {
+            id,
+            name,
+            username,
+            ...(profile !== undefined ? { profile } : {}),
+            ...(bio !== undefined ? { bio } : {}),
+        };
+
         const user = await prisma.user.upsert({
             where: { id },
-            create: { id, name, username, profile, bio },
+            create: createData,
             update: updateData,
         });
 

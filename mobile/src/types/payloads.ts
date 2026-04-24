@@ -13,6 +13,13 @@ export interface CreateRoomPayload {
     memberIds: string[];
 }
 
+export interface CreateUserPayload {
+    name: string;
+    username: string;
+    bio?: string;
+    profile?: string;
+}
+
 export interface UpdateUserPayload {
     name?: string;
     username?: string;

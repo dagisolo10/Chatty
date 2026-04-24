@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import { useSignIn } from "@clerk/expo";
+import useThemeColors from "@/constants/colors";
 import { ActivityIndicator } from "react-native";
 import { getClerkError } from "@/lib/helper-functions";
 import { ErrorMessage } from "@/components/ui/screen-ui";
@@ -16,6 +17,7 @@ if (!token) throw new Error("Add token to the .env file");
 
 export default function SignIn() {
     const router = useRouter();
+    const { mutedForeground, opaqueDestructive } = useThemeColors();
     const { signIn, errors, fetchStatus } = useSignIn();
 
     const [passwordVisible, setPasswordVisible] = useState(false);
@@ -66,59 +68,58 @@ export default function SignIn() {
         }
     };
 
+    const inputErrStyle = {
+        email: errors.fields.identifier ? "border-destructive/70 border" : "",
+        password: errors.fields.password ? "border-destructive/70 border" : "",
+    };
+    const iconErrStyle = {
+        email: errors.fields.identifier ? opaqueDestructive : mutedForeground,
+        password: errors.fields.password ? opaqueDestructive : mutedForeground,
+    };
+
     return (
-        <Screen noSafeArea onTab className="justify-center gap-8">
+        <Screen noSafeArea onTab className="justify-center gap-4">
             <View>
                 <Text className="h1">Login to Your</Text>
                 <Text className="h1">Account</Text>
             </View>
 
             <View className="relative">
-                <Input
-                    className={cn("pl-14", !true ? "border-destructive/70 border" : "")}
-                    value={emailAddress}
-                    onChangeText={setEmailAddress}
-                    placeholder="name@domain.com"
-                    autoCapitalize="none"
-                />
+                <Input className={cn("pl-14", inputErrStyle.email)} value={emailAddress} onChangeText={setEmailAddress} placeholder="name@domain.com" autoCapitalize="none" />
                 <View className="absolute top-1/2 left-4 -translate-y-1/2">
-                    <Mail color={!true ? "#e35454bf" : "#73738c"} size={18} />
+                    <Mail color={iconErrStyle.email} size={18} />
                 </View>
             </View>
 
-            <ErrorMessage message={errors.fields.identifier?.message} />
-
             <View className="relative">
                 <Input
-                    className={cn("pl-14", !true ? "border-destructive/70 border" : "")}
                     value={password}
                     onChangeText={setPassword}
                     placeholder="Min. 8 characters"
                     secureTextEntry={!passwordVisible}
+                    className={cn("pl-14", inputErrStyle.password)}
                 />
                 <View className="absolute top-1/2 left-4 -translate-y-1/2">
-                    <Lock color={!true ? "#e35454bf" : "#73738c"} size={18} />
+                    <Lock color={iconErrStyle.password} size={18} />
                 </View>
 
                 <Button
-                    className={cn(password ? "block" : "hidden", "absolute top-1/2 right-2 -translate-y-1/2")}
-                    variant={"ghost"}
                     size={"icon"}
+                    variant={"ghost"}
+                    className={cn(password ? "block" : "hidden", "absolute top-1/2 right-2 -translate-y-1/2")}
                     onPress={() => setPasswordVisible((visible) => !visible)}
                 >
-                    {passwordVisible ? <EyeOff color={"#73738c"} size={16} /> : <Eye color={"#73738c"} size={16} />}
+                    {passwordVisible ? <EyeOff color={mutedForeground} size={16} /> : <Eye color={mutedForeground} size={16} />}
                 </Button>
             </View>
 
-            <ErrorMessage message={errors.fields.password?.message} />
-
-            <ErrorMessage message={error} />
+            <ErrorMessage message={error || errors.fields.identifier?.message || errors.fields.password?.message} />
 
             <View className="gap-2">
                 <Button onPress={handleSignIn} variant="secondary" disabled={!emailAddress || !password || fetchStatus === "fetching" || isSigningIn} component>
                     <View className="row gap-4">
                         {isSigningIn && <ActivityIndicator color={"#ffffff"} />}
-                        <Text className="gap-4 text-xl font-bold">Login</Text>
+                        <Text className="text-xl font-bold">Login</Text>
                     </View>
                 </Button>
 

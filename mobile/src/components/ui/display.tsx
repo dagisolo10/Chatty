@@ -32,7 +32,7 @@ export const Screen = ({ className, children, nonScrollable = false, onTab = fal
     if (nonScrollable) {
         return (
             <Container className="bg-background flex-1">
-                <KeyboardAvoidingView behavior={behavior} style={{ flexGrow: 1 }}>
+                <KeyboardAvoidingView behavior={behavior} style={{ flex: 1 }}>
                     {onTab && <RNView style={topInset} className="bg-dead-zone" />}
                     <RNView className={baseStyle} {...props}>
                         {children}
@@ -44,7 +44,7 @@ export const Screen = ({ className, children, nonScrollable = false, onTab = fal
 
     return (
         <Container className="bg-background flex-1">
-            <KeyboardAvoidingView behavior={behavior} style={{ flexGrow: 1 }}>
+            <KeyboardAvoidingView behavior={behavior} style={{ flex: 1 }}>
                 <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1 }}>
                     {onTab && <RNView style={topInset} className="bg-dead-zone" />}
                     <RNView className={baseStyle} {...props}>

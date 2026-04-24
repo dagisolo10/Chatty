@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import Skeleton from "@/components/ui/skeleton";
+import useThemeColors from "@/constants/colors";
 import { ActivityIndicator } from "react-native";
 import { useAuth, useSignUp } from "@clerk/expo";
 import { validatePassword } from "@/lib/password";
@@ -22,6 +23,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export default function SignUp() {
     const router = useRouter();
     const { isSignedIn } = useAuth();
+    const { mutedForeground, opaqueDestructive } = useThemeColors();
     const { signUp, errors, fetchStatus } = useSignUp();
 
     const [passwordVisible, setPasswordVisible] = useState(false);
@@ -80,6 +82,15 @@ export default function SignUp() {
 
     if (!signUp || isSignedIn || signUp.status === "complete") return <Skeleton />;
 
+    const inputErrStyle = {
+        email: emailError ? "border-destructive/70 border" : "",
+        password: passwordError && isPasswordDirty && submitted ? "border-destructive/70 border" : "",
+    };
+    const iconErrStyle = {
+        email: emailError ? opaqueDestructive : mutedForeground,
+        password: passwordError && isPasswordDirty && submitted ? opaqueDestructive : mutedForeground,
+    };
+
     return (
         <Screen noSafeArea onTab className="justify-center gap-8">
             <View>
@@ -89,51 +100,47 @@ export default function SignUp() {
 
             <View className="relative">
                 <Input
-                    className={cn("pl-14", emailError ? "border-destructive/70 border" : "")}
                     value={emailAddress}
-                    onChangeText={(val) => handleEmailChange(val)}
-                    placeholder="name@domain.com"
                     autoCapitalize="none"
+                    placeholder="name@domain.com"
+                    className={cn("pl-14", inputErrStyle.email)}
+                    onChangeText={(val) => handleEmailChange(val)}
                 />
                 <View className="absolute top-1/2 left-4 -translate-y-1/2">
-                    <Mail color={emailError ? "#e35454bf" : "#73738c"} size={18} />
+                    <Mail color={iconErrStyle.email} size={18} />
                 </View>
             </View>
-
-            <ErrorMessage message={errors.fields.emailAddress?.message} />
 
             <View className="relative">
                 <Input
-                    className={cn("pl-14", passwordError && isPasswordDirty && submitted ? "border-destructive/70 border" : "")}
                     value={password}
-                    onChangeText={(val) => handlePasswordChange(val)}
                     placeholder="Min. 8 characters"
                     secureTextEntry={!passwordVisible}
+                    className={cn("pl-14", inputErrStyle.password)}
+                    onChangeText={(val) => handlePasswordChange(val)}
                 />
                 <View className="absolute top-1/2 left-4 -translate-y-1/2">
-                    <Lock color={passwordError && isPasswordDirty && submitted ? "#e35454bf" : "#73738c"} size={18} />
+                    <Lock color={iconErrStyle.password} size={18} />
                 </View>
 
                 <Button
-                    className={cn(password ? "block" : "hidden", "absolute top-1/2 right-2 -translate-y-1/2")}
-                    variant={"ghost"}
                     size={"icon"}
+                    variant={"ghost"}
                     onPress={() => setPasswordVisible((visible) => !visible)}
+                    className={cn(password ? "block" : "hidden", "absolute top-1/2 right-2 -translate-y-1/2")}
                 >
-                    {passwordVisible ? <EyeOff color={"#73738c"} size={16} /> : <Eye color={"#73738c"} size={16} />}
+                    {passwordVisible ? <EyeOff color={mutedForeground} size={16} /> : <Eye color={mutedForeground} size={16} />}
                 </Button>
             </View>
 
-            <ErrorMessage message={errors.fields.password?.message} />
-
-            <ErrorMessage message={error} />
+            <ErrorMessage message={error || errors.fields.emailAddress?.message || errors.fields.password?.message} />
 
             <PasswordRequirements value={password} isPasswordDirty={isPasswordDirty} passwordRequirements={passwordRequirements} submitted={submitted} />
 
             <Button onPress={handleSignUp} variant="secondary" disabled={!emailAddress || !password || fetchStatus === "fetching" || isSigningUp} component>
                 <View className="row gap-4">
                     {isSigningUp && <ActivityIndicator color={"#ffffff"} />}
-                    <Text className="gap-4 text-xl font-bold">Create Account</Text>
+                    <Text className="text-xl font-bold">Create Account</Text>
                 </View>
             </Button>
 

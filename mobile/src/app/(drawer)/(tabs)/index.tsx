@@ -1,15 +1,26 @@
-import { Image } from "react-native";
 import { useAuth } from "@clerk/expo";
+import { useRef, useState } from "react";
+import { GalleryImage } from "@/types/types";
 import useAuthStore from "@/store/auth-store";
-import { Screen, Text, View } from "@/components/ui/display";
-import { Button, NavLink } from "@/components/ui/interactive";
-import { ErrorMessage, LoadingScreen } from "@/components/ui/screen-ui";
+import { NavLink } from "@/components/ui/interactive";
+import { Screen, Text } from "@/components/ui/display";
+import ImagePreview from "@/components/ui/image-preview";
+import { LoadingScreen, MissMatch } from "@/components/ui/screen-ui";
+import { FlatList, Image, Pressable, useWindowDimensions } from "react-native";
 
 export default function Home() {
+    const { width } = useWindowDimensions();
     const { isLoaded, isSignedIn } = useAuth();
     const { user, loading, error, retryUser } = useAuthStore();
 
+    const [galleryVisible, setGalleryVisible] = useState(false);
+    const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+    const galleryRef = useRef<FlatList<GalleryImage>>(null);
+    const previewRef = useRef<FlatList<GalleryImage>>(null);
+
     const hasStoreMismatch = isLoaded && isSignedIn && !user;
+    const galleryImages = user?.profile ? Array.from({ length: 6 }, (_, index) => ({ id: `${user.id}-profile-${index}`, uri: user.profile!, label: `Profile photo ${index + 1}` })) : [];
 
     if (!isLoaded || (!hasStoreMismatch && loading)) return <LoadingScreen />;
 
@@ -17,38 +28,54 @@ export default function Home() {
 
     if (!user) return <LoadingScreen />;
 
+    function syncPreview(index: number) {
+        previewRef.current?.scrollToIndex({ index, animated: true, viewPosition: 0.5 });
+    }
+
+    function openGallery() {
+        setActiveImageIndex(0);
+        setGalleryVisible(true);
+
+        requestAnimationFrame(() => {
+            galleryRef.current?.scrollToIndex({ index: 0, animated: false });
+            syncPreview(0);
+        });
+    }
+
+    function handleGalleryScrollEnd(offsetX: number) {
+        const nextIndex = Math.round(offsetX / width);
+
+        if (nextIndex === activeImageIndex) return;
+
+        setActiveImageIndex(nextIndex);
+        syncPreview(nextIndex);
+    }
+
+    function jumpToImage(index: number) {
+        setActiveImageIndex(index);
+        galleryRef.current?.scrollToIndex({ index, animated: true });
+        syncPreview(index);
+    }
+
+    const props = { galleryVisible, setGalleryVisible, galleryRef, galleryImages, activeImageIndex, handleGalleryScrollEnd, width, previewRef, jumpToImage };
+
     return (
-        <Screen onTab className="items-center justify-center">
-            {user.profile && <Image source={{ uri: user.profile }} accessibilityLabel={`${user.name} profile picture`} className="size-36 rounded-full" />}
+        <>
+            <Screen onTab className="items-center">
+                {user.profile && (
+                    <Pressable onPress={openGallery}>
+                        <Image source={{ uri: user.profile }} accessibilityLabel={`${user.name} profile picture`} className="size-32 rounded-full" />
+                    </Pressable>
+                )}
 
-            <Text className="h1">Welcome</Text>
+                <Text className="h2">{user.name}</Text>
+                <Text className="text-primary">@{user.username}</Text>
+                {user.bio && <Text className="text-muted-foreground">{user.bio}</Text>}
 
-            <Text className="h2">{user.name}</Text>
+                <NavLink href="/(drawer)/settings">Settings</NavLink>
+            </Screen>
 
-            <Text className="">{user.username}</Text>
-
-            {user.bio && <Text>{user.bio}</Text>}
-
-            <NavLink href="/(drawer)/settings">Settings</NavLink>
-        </Screen>
-    );
-}
-
-function MissMatch({ error, loading, onPress }: { error: string | null; loading: boolean; onPress: () => void }) {
-    return (
-        <Screen onTab noSafeArea className="items-center justify-center gap-4 px-6">
-            <Text className="h2 text-center">We could not finish loading your profile.</Text>
-            <Text className="text-muted-foreground text-center">Retry syncing your account, or continue to onboarding if your profile has not been created yet.</Text>
-            <ErrorMessage message={error || "Your Clerk session is active, but your app profile is missing."} />
-
-            <View className="w-full gap-3">
-                <Button onPress={onPress} disabled={loading}>
-                    Retry sync
-                </Button>
-                <NavLink href="/(onboarding)/onboarding" variant="outline">
-                    Complete profile
-                </NavLink>
-            </View>
-        </Screen>
+            <ImagePreview props={props} />
+        </>
     );
 }

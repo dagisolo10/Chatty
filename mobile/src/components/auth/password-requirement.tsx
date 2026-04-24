@@ -2,7 +2,7 @@ import { Card, View, Text } from "../ui/display";
 
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react-native";
-import { PasswordRequirementsType, validatePassword } from "@/lib/password";
+import { PasswordRequirementsType, validatePassword } from "@/utils/password";
 
 interface PasswordReqProp {
     value: string;

@@ -2,8 +2,8 @@ import { useState } from "react";
 import { ActivityIndicator } from "react-native";
 import { useSignIn, useSignUp } from "@clerk/expo";
 import { verificationTexts } from "@/constants/texts";
-import { getClerkError } from "@/lib/helper-functions";
 import { ErrorMessage } from "@/components/ui/screen-ui";
+import { getClerkError } from "@/utils/helper-functions";
 import { Input, Button } from "@/components/ui/interactive";
 import { Text, Screen, View } from "@/components/ui/display";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -107,17 +107,8 @@ export default function Verification() {
 
             <View className="gap-6">
                 <View className="relative">
-                    <Input
-                        className="pl-14"
-                        value={code}
-                        onChangeText={setCode}
-                        placeholder="123456"
-                        keyboardType="number-pad"
-                        maxLength={isSecondFactor && useBackupCode ? 12 : 6}
-                    />
-                    <View className="absolute top-1/2 left-5 -translate-y-1/2">
-                        {isSecondFactor ? <ShieldCheck color="#73738c" size={20} /> : <Hash color="#73738c" size={20} />}
-                    </View>
+                    <Input className="pl-14" value={code} onChangeText={setCode} placeholder="123456" keyboardType="number-pad" maxLength={isSecondFactor && useBackupCode ? 12 : 6} />
+                    <View className="absolute top-1/2 left-5 -translate-y-1/2">{isSecondFactor ? <ShieldCheck color="#73738c" size={20} /> : <Hash color="#73738c" size={20} />}</View>
                 </View>
 
                 <Button onPress={handleVerify} variant="secondary" disabled={isFetching || !code} component>

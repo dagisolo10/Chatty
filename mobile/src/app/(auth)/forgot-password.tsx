@@ -3,8 +3,8 @@ import { useState } from "react";
 import { useRouter } from "expo-router";
 import { useSignIn } from "@clerk/expo";
 import { ActivityIndicator } from "react-native";
-import { getClerkError } from "@/lib/helper-functions";
 import { ErrorMessage } from "@/components/ui/screen-ui";
+import { getClerkError } from "@/utils/helper-functions";
 import { Text, Screen, View } from "@/components/ui/display";
 import { Mail, Lock, Hash, Eye, EyeOff } from "lucide-react-native";
 import { Button, Input, NavLink } from "@/components/ui/interactive";
@@ -129,9 +129,7 @@ export default function ForgotPassword() {
             <View>
                 <Text className="h1">{codeSent ? "Reset Your" : "Forgot"}</Text>
                 <Text className="h1">{codeSent ? "Password." : "Password?"}</Text>
-                <Text className="text-muted-foreground mt-2">
-                    {codeSent ? "Check your email for the 6-digit verification code." : "Enter your email and we'll send you a reset code."}
-                </Text>
+                <Text className="text-muted-foreground mt-2">{codeSent ? "Check your email for the 6-digit verification code." : "Enter your email and we'll send you a reset code."}</Text>
             </View>
 
             {codeSent ? (
@@ -144,13 +142,7 @@ export default function ForgotPassword() {
                         </View>
                     </View>
                     <View className="relative">
-                        <Input
-                            className={cn("pl-14", passwordError && submitted ? "border-destructive/70 border" : "")}
-                            value={password}
-                            onChangeText={handlePasswordChange}
-                            placeholder="New password"
-                            secureTextEntry={!passwordVisible}
-                        />
+                        <Input className={cn("pl-14", passwordError && submitted ? "border-destructive/70 border" : "")} value={password} onChangeText={handlePasswordChange} placeholder="New password" secureTextEntry={!passwordVisible} />
 
                         <View className="absolute top-1/2 left-4 -translate-y-1/2">
                             <Lock color={passwordError && submitted ? "#e35454bf" : "#73738c"} size={18} />

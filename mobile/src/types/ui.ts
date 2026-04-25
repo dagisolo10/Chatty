@@ -1,4 +1,4 @@
-import { Room, Member, User, Message } from "./model";
+import { Room, Member, User, Message, RoomType } from "./model";
 
 export interface ChatListItem extends Room {
     members: (Member & { user: User })[];
@@ -10,3 +10,5 @@ export interface ChatListItem extends Room {
 export interface HydratedMessage extends Message {
     user: User;
 }
+
+export type ChatFilter = RoomType | "All";

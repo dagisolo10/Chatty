@@ -1,7 +1,6 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import useThemeColors from "@/hooks/use-colors";
-import { DrawerToggleButton } from "@react-navigation/drawer";
 
 export default function TabsLayout() {
     const { background, border } = useThemeColors();
@@ -10,12 +9,15 @@ export default function TabsLayout() {
         <Tabs
             screenOptions={{
                 headerShown: false,
-                headerLeft: () => <DrawerToggleButton />,
                 tabBarStyle: {
                     height: 72,
                     paddingTop: 6,
                     borderTopColor: border,
                     backgroundColor: background,
+                },
+                tabBarItemStyle: {
+                    justifyContent: "center",
+                    alignItems: "center",
                 },
             }}
         >

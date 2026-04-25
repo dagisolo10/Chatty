@@ -30,7 +30,7 @@ export const buttonVariants = cva("flex-row items-center justify-center rounded-
             lg: "h-16 px-6",
             sm: "h-9 px-3 rounded-xl",
             icon: "size-12 px-0",
-            content: "h-auto rounded-none",
+            content: "h-auto px-0",
         },
     },
 
@@ -50,13 +50,26 @@ export const textVariants = {
     link: "text-accent ",
 };
 
-export const Button = ({ variant = "primary", size = "default", children, className, textClassName, onPress, component = false, ...props }: ButtonProps & { component?: boolean }) => {
+export const Button = ({
+    variant = "primary",
+    size = "default",
+    children,
+    className,
+    textClassName,
+    onPress,
+    component = false,
+    ...props
+}: ButtonProps & { component?: boolean }) => {
     const handlePress = (e: GestureResponderEvent) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         onPress?.(e);
     };
 
-    const renderContent = component ? children : <Text className={cn("font-semibold", variant && textVariants[variant], textClassName)}>{children}</Text>;
+    const renderContent = component ? (
+        children
+    ) : (
+        <Text className={cn("font-semibold", variant && textVariants[variant], textClassName)}>{children}</Text>
+    );
 
     return (
         <Pressable onPress={handlePress} className={cn(buttonVariants({ variant, size }), className)} {...props}>
@@ -75,12 +88,26 @@ export const navLinkTextVariants = {
     link: "text-accent",
 };
 
-export const NavLink = ({ href, variant = "link", size = "default", children, className, textClassName, onPress, component = false, ...props }: ButtonProps & { href: LinkProps["href"]; component?: boolean }) => {
+export const NavLink = ({
+    href,
+    variant = "link",
+    size = "default",
+    children,
+    className,
+    textClassName,
+    onPress,
+    component = false,
+    ...props
+}: ButtonProps & { href: LinkProps["href"]; component?: boolean }) => {
     const handlePress = (e: GestureResponderEvent) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         onPress?.(e);
     };
-    const renderContent = component ? children : <Text className={cn("font-sans-medium", variant && navLinkTextVariants[variant], textClassName)}>{children}</Text>;
+    const renderContent = component ? (
+        children
+    ) : (
+        <Text className={cn("font-sans-medium", variant && navLinkTextVariants[variant], textClassName)}>{children}</Text>
+    );
 
     return (
         <Link href={href} asChild>
@@ -95,10 +122,20 @@ export const Input = ({ className, ...props }: TextInputProps & { className?: st
     const { isDark } = useTheme();
     const placeholderColor = isDark ? "#73738c" : "#334155";
 
-    return <TextInput placeholderTextColor={placeholderColor} className={cn("border-border bg-muted text-foreground caret-muted-foreground h-14 w-full rounded-2xl pr-4 pl-4", className)} {...props} />;
+    return (
+        <TextInput
+            placeholderTextColor={placeholderColor}
+            className={cn("border-border bg-muted text-foreground caret-muted-foreground h-14 w-full rounded-2xl pr-4 pl-4", className)}
+            {...props}
+        />
+    );
 };
 
-export const Toggle = ({ value, onToggle, ...props }: Omit<SwitchProps, "value" | "onValueChange"> & { value?: boolean; onToggle?: (val: boolean) => void }) => (
+export const Toggle = ({
+    value,
+    onToggle,
+    ...props
+}: Omit<SwitchProps, "value" | "onValueChange"> & { value?: boolean; onToggle?: (val: boolean) => void }) => (
     <Switch
         value={value}
         onValueChange={(val) => {

@@ -20,7 +20,15 @@ export default function DrawerThemeToggle() {
                 </View>
             </View>
 
-            <Button onPress={toggle} variant={"ghost"} component className="p-0">
+            <Button
+                component
+                onPress={toggle}
+                variant={"ghost"}
+                accessibilityRole="switch"
+                accessibilityState={{ checked: isDark }}
+                accessibilityLabel={isDark ? "Disable night mode" : "Enable night mode"}
+                className="p-0"
+            >
                 <View className="dark:bg-drawer h-8 w-14 justify-center rounded-full bg-white px-1">
                     <View className="size-6 self-start rounded-full bg-[#cbd5e1] dark:self-end" />
                 </View>

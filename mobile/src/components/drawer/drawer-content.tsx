@@ -1,5 +1,5 @@
 import ImagePreview from "../ui/image-preview";
-import { LoadingScreen, MissMatch } from "../ui/screen-ui";
+import { LoadingScreen, MisMatch } from "../ui/screen-ui";
 
 import { useAuth } from "@clerk/expo";
 import { Ionicons } from "@expo/vector-icons";
@@ -19,11 +19,13 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
     const { background, border, primary } = useThemeColors();
 
     const hasStoreMismatch = isLoaded && isSignedIn && !user;
-    const galleryImages = user?.profile ? Array.from({ length: 6 }, (_, index) => ({ id: `${user.id}-profile-${index}`, uri: user.profile!, label: `Profile photo ${index + 1}` })) : [];
+    const galleryImages = user?.profile
+        ? Array.from({ length: 6 }, (_, index) => ({ id: `${user.id}-profile-${index}`, uri: user.profile!, label: `Profile photo ${index + 1}` }))
+        : [];
 
     if (!isLoaded || (!hasStoreMismatch && loading)) return <LoadingScreen />;
 
-    if (hasStoreMismatch) return <MissMatch error={error} loading={loading} onPress={retryUser} />;
+    if (hasStoreMismatch) return <MisMatch error={error} loading={loading} onPress={retryUser} />;
 
     if (!user) return <LoadingScreen />;
 
@@ -42,7 +44,11 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
                         <View className="size-18 items-center justify-center overflow-hidden rounded-full bg-white/20">
                             {user.profile ? (
                                 <ImagePreview width={width} galleryImages={galleryImages}>
-                                    <Image source={{ uri: user.profile }} accessibilityLabel={`${user.name} profile picture`} className="size-18 rounded-full" />
+                                    <Image
+                                        source={{ uri: user.profile }}
+                                        accessibilityLabel={`${user.name} profile picture`}
+                                        className="size-18 rounded-full"
+                                    />
                                 </ImagePreview>
                             ) : (
                                 <Text className="text-2xl font-bold text-white">{initials || "C"}</Text>

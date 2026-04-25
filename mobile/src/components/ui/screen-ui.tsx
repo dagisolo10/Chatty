@@ -3,7 +3,15 @@ import { ActivityIndicator, View } from "react-native";
 import { Text, Screen } from "@/components/ui/display";
 import { Button, NavLink } from "@/components/ui/interactive";
 
-export function ErrorScreen({ message = "Something went wrong", href = "/", button = "Go Home" }: { message?: string; href?: LinkProps["href"]; button?: string }) {
+export function ErrorScreen({
+    message = "Something went wrong",
+    href = "/",
+    button = "Go Home",
+}: {
+    message?: string;
+    href?: LinkProps["href"];
+    button?: string;
+}) {
     return (
         <Screen className="items-center justify-center gap-4 px-6">
             <Text className="text-center text-3xl">{message}</Text>
@@ -30,11 +38,13 @@ export function ErrorMessage({ message }: { message?: string | null }) {
     return <Text className="text-destructive mt-2 text-sm font-bold">{message}</Text>;
 }
 
-export function MissMatch({ error, loading, onPress }: { error: string | null; loading: boolean; onPress: () => void }) {
+export function MisMatch({ error, loading, onPress }: { error: string | null; loading: boolean; onPress: () => void }) {
     return (
         <Screen onTab noSafeArea className="items-center justify-center gap-4 px-6">
             <Text className="h2 text-center">We could not finish loading your profile.</Text>
-            <Text className="text-muted-foreground text-center">Retry syncing your account, or continue to onboarding if your profile has not been created yet.</Text>
+            <Text className="text-muted-foreground text-center">
+                Retry syncing your account, or continue to onboarding if your profile has not been created yet.
+            </Text>
             <ErrorMessage message={error || "Your Clerk session is active, but your app profile is missing."} />
 
             <View className="w-full gap-3">

@@ -4,14 +4,14 @@ import { Button } from "@/components/ui/interactive";
 import { Text, View } from "@/components/ui/display";
 import { FlatList, Image, Modal, Pressable } from "react-native";
 
-interface Prop {
+interface ImagePreviewProp {
     width: number;
     galleryImages: GalleryImage[];
     initialIndex?: number;
     children: ReactNode | ((controls: { openPreview: (index?: number) => void }) => ReactNode);
 }
 
-export default function ImagePreview({ width, galleryImages, initialIndex = 0, children }: Prop) {
+export default function ImagePreview({ width, galleryImages, initialIndex = 0, children }: ImagePreviewProp) {
     const [galleryVisible, setGalleryVisible] = useState(false);
     const [activeImageIndex, setActiveImageIndex] = useState(initialIndex);
 
@@ -24,12 +24,14 @@ export default function ImagePreview({ width, galleryImages, initialIndex = 0, c
     }
 
     function syncPreview(index: number) {
+        if (index < 0 || index >= galleryImages.length) return;
         previewRef.current?.scrollToIndex({ index, animated: true, viewPosition: 0.5 });
     }
 
     function openPreview(index = initialIndex) {
-        setActiveImageIndex(index);
-        pendingIndexRef.current = index;
+        const clamped = Math.min(Math.max(index, 0), Math.max(galleryImages.length - 1, 0));
+        setActiveImageIndex(clamped);
+        pendingIndexRef.current = clamped;
         setGalleryVisible(true);
     }
 
@@ -80,6 +82,9 @@ export default function ImagePreview({ width, galleryImages, initialIndex = 0, c
                         keyExtractor={(item) => item.id}
                         onMomentumScrollEnd={(event) => handleGalleryScrollEnd(event.nativeEvent.contentOffset.x)}
                         getItemLayout={(_, index) => ({ length: width, offset: width * index, index })}
+                        onScrollToIndexFailed={({ index }) =>
+                            setTimeout(() => previewRef.current?.scrollToOffset({ offset: 84 * index, animated: true }), 50)
+                        }
                         renderItem={({ item }) => (
                             <View style={{ width }}>
                                 <Image source={{ uri: item.uri }} resizeMode="contain" className="size-full" accessibilityLabel={item.label} />
@@ -105,7 +110,12 @@ export default function ImagePreview({ width, galleryImages, initialIndex = 0, c
 
                                 return (
                                     <Pressable onPress={() => jumpToImage(index)} className="overflow-hidden rounded-2xl">
-                                        <Image source={{ uri: item.uri }} accessibilityLabel={`${item.label} preview`} className="size-18 rounded-2xl" style={{ opacity: isActive ? 1 : 0.45, borderWidth: isActive ? 1 : 0, borderColor: "#73738c" }} />
+                                        <Image
+                                            source={{ uri: item.uri }}
+                                            accessibilityLabel={`${item.label} preview`}
+                                            className="size-18 rounded-2xl"
+                                            style={{ opacity: isActive ? 1 : 0.45, borderWidth: isActive ? 1 : 0, borderColor: "#73738c" }}
+                                        />
                                     </Pressable>
                                 );
                             }}

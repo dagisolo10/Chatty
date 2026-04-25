@@ -1,14 +1,13 @@
-import { Dispatch, SetStateAction } from "react";
-import Animated from "react-native-reanimated";
 import { cn } from "@/lib/utils";
 import { ChatFilter } from "@/types/ui";
+import Animated from "react-native-reanimated";
+import { Dispatch, SetStateAction } from "react";
 import { Button } from "@/components/ui/interactive";
 import { Text, View } from "@/components/ui/display";
 
 interface ChatFiltersProps {
     activeFilter: ChatFilter;
     setActiveFilter: Dispatch<SetStateAction<ChatFilter>>;
-    mutedForeground: string;
     animatedStyle: React.ComponentProps<typeof Animated.View>["style"];
 }
 
@@ -18,7 +17,7 @@ const FILTERS: { key: ChatFilter; label: string }[] = [
     { key: "Group", label: "Groups" },
 ];
 
-export default function ChatFilters({ activeFilter, setActiveFilter, mutedForeground, animatedStyle }: ChatFiltersProps) {
+export default function ChatFilters({ activeFilter, setActiveFilter, animatedStyle }: ChatFiltersProps) {
     return (
         <Animated.View style={animatedStyle} className="overflow-hidden">
             <View className="flex-row items-center gap-2">
@@ -30,11 +29,12 @@ export default function ChatFilters({ activeFilter, setActiveFilter, mutedForegr
                             component
                             key={filter.key}
                             onPress={() => setActiveFilter(filter.key)}
-                            className={cn("h-10 flex-1 items-center justify-center rounded-full border", isActive ? "border-primary bg-primary" : "border-border bg-muted")}
+                            className={cn(
+                                "h-10 flex-1 items-center justify-center rounded-full border",
+                                isActive ? "border-primary bg-primary" : "border-border bg-muted",
+                            )}
                         >
-                            <Text className="text-sm font-bold" style={{ color: isActive ? "#ffffff" : mutedForeground }}>
-                                {filter.label}
-                            </Text>
+                            <Text className={cn(isActive ? "text-foreground" : "text-muted-foreground", "text-sm font-bold")}>{filter.label}</Text>
                         </Button>
                     );
                 })}

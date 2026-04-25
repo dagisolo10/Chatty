@@ -37,11 +37,27 @@ export default function MainLayout() {
                 drawerItemStyle: { borderRadius: 12, marginHorizontal: 0, marginVertical: 2, paddingHorizontal: 4 },
             }}
         >
-            <Drawer.Screen name="(tabs)" options={{ title: "Chats", headerShown: false, drawerIcon: ({ color, size }) => <Ionicons name="chatbubbles-outline" size={size} color={color} /> }} />
-            <Drawer.Screen name="profile" options={{ title: "My Profile", drawerIcon: ({ color, size }) => <Ionicons name="person-circle-outline" size={size} color={color} /> }} />
-            <Drawer.Screen name="new-group" options={{ title: "New Group", drawerIcon: ({ color, size }) => <Ionicons name="people-outline" size={size} color={color} /> }} />
-            <Drawer.Screen name="contacts" options={{ title: "Contacts", drawerIcon: ({ color, size }) => <Ionicons name="call-outline" size={size} color={color} /> }} />
-            <Drawer.Screen name="settings" options={{ title: "Settings", drawerIcon: ({ color, size }) => <Ionicons name="settings-outline" size={size} color={color} /> }} />
+            <Drawer.Screen
+                name="(tabs)"
+                options={{
+                    title: "Chats",
+                    headerShown: false,
+                    drawerIcon: ({ color, size }) => <Ionicons name="chatbubbles-outline" size={size} color={color} />,
+                }}
+            />
+            <Drawer.Screen
+                name="profile"
+                options={{
+                    title: "My Profile",
+                    drawerIcon: ({ color, size }) => <Ionicons name="person-circle-outline" size={size} color={color} />,
+                }}
+            />
+            <Drawer.Screen
+                name="new-group"
+                options={{ title: "New Group", drawerIcon: ({ color, size }) => <Ionicons name="people-outline" size={size} color={color} /> }}
+            />
+            {/* <Drawer.Screen name="contacts" href="/(drawer)/(tabs)/contacts" options={{ title: "Contacts", drawerIcon: ({ color, size }) => <Ionicons name="call-outline" size={size} color={color} /> }} /> */}
+            {/* <Drawer.Screen name="settings" href="/(drawer)/(tabs)/settings" options={{ title: "Settings", drawerIcon: ({ color, size }) => <Ionicons name="settings-outline" size={size} color={color} /> }} /> */}
         </Drawer>
     );
 }

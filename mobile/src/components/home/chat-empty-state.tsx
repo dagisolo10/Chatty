@@ -1,12 +1,12 @@
+import { Colors } from "@/hooks/use-colors";
 import { Text, View } from "@/components/ui/display";
 
 interface ChatEmptyStateProps {
-    card: string;
-    border: string;
-    mutedForeground: string;
+    color: Colors;
 }
 
-export default function ChatEmptyState({ card, border, mutedForeground }: ChatEmptyStateProps) {
+export default function ChatEmptyState({ color }: ChatEmptyStateProps) {
+    const { card, border, mutedForeground } = color;
     return (
         <View className="items-center justify-center px-0 py-12">
             <View style={{ backgroundColor: card, borderColor: border }} className="w-full rounded-[28px] border px-6 py-8">

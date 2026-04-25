@@ -24,9 +24,11 @@ export default function RootLayout() {
         <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
             <AuthBootstrap>
                 <ThemeComponent isDark={isDark}>
-                    <Stack screenOptions={{ headerShown: false }}>
-                        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-                        <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
+                    <Stack screenOptions={{ headerShown: false }} initialRouteName="(drawer)">
+                        <Stack.Screen name="(chat)" />
+                        <Stack.Screen name="(auth)" />
+                        <Stack.Screen name="(drawer)" />
+                        <Stack.Screen name="(onboarding)" />
                     </Stack>
                 </ThemeComponent>
             </AuthBootstrap>

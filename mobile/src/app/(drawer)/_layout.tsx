@@ -27,7 +27,14 @@ export default function MainLayout() {
                 drawerInactiveTintColor: mutedForeground,
                 drawerContentStyle: { backgroundColor: background },
                 drawerLabelStyle: { marginLeft: 0, fontSize: 15, fontWeight: "700" },
-                headerStyle: { backgroundColor: background, borderBottomColor: border },
+                headerStyle: {
+                    backgroundColor: background,
+                    borderBottomColor: border,
+                    // height: 70,
+                },
+                headerTitleStyle: {
+                    marginLeft: 16,
+                },
                 drawerItemStyle: { borderRadius: 12, marginHorizontal: 0, marginVertical: 2, paddingHorizontal: 4 },
             }}
         >

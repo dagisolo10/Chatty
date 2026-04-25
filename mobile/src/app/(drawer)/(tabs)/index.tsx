@@ -3,9 +3,9 @@ import { ChatFilter } from "@/types/ui";
 import { mockChats } from "@/mocks/chats";
 import useAuthStore from "@/store/auth-store";
 import useThemeColors from "@/hooks/use-colors";
+import { Screen } from "@/components/ui/display";
 import { useMemo, useState, useEffect } from "react";
 import SearchBar from "@/components/home/search-bar";
-import { Screen, View } from "@/components/ui/display";
 import ChatFilters from "@/components/home/chat-filters";
 import ChatEmptyState from "@/components/home/chat-empty-state";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -40,9 +40,7 @@ export default function Home() {
     }, [chromeOpacity]);
     const previousOffset = useSharedValue(0);
 
-    const userName = user?.name ?? "Saved messages";
-
-    const chats = useMemo<ChatListItemData[]>(() => mockChats(userName), [userName]);
+    const chats = useMemo<ChatListItemData[]>(() => mockChats(), []);
     const filteredChats = useMemo(() => {
         const normalizedQuery = query.trim().toLowerCase();
 
@@ -99,7 +97,7 @@ export default function Home() {
     });
 
     const hasStoreMismatch = isLoaded && isSignedIn && !user && !loading;
-    if (!isLoaded || loading) return <LoadingScreen />;
+    if (!isLoaded || (!hasStoreMismatch && loading)) return <LoadingScreen />;
 
     if (hasStoreMismatch) return <MisMatch error={error} loading={loading} onPress={retryUser} />;
 
@@ -107,10 +105,10 @@ export default function Home() {
 
     return (
         <Screen nonScrollable noSafeArea className="pb-0">
-            <View style={[{ paddingTop: insets.top + 16 }, chromeAnimatedStyle]} className="absolute top-0 right-0 left-0 z-20 gap-2 px-4">
+            <Animated.View style={[{ paddingTop: insets.top + 16 }, chromeAnimatedStyle]} className="absolute top-0 right-0 left-0 z-20 gap-2 px-4">
                 <SearchBar query={query} setQuery={setQuery} color={color} animatedStyle={searchBarAnimatedStyle} />
                 <ChatFilters activeFilter={activeFilter} setActiveFilter={setActiveFilter} animatedStyle={filtersAnimatedStyle} />
-            </View>
+            </Animated.View>
 
             <Animated.FlatList
                 onScroll={onScroll}
@@ -126,3 +124,5 @@ export default function Home() {
         </Screen>
     );
 }
+
+// TODO fix the animated flat-list

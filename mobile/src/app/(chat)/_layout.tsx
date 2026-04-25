@@ -1,19 +1,13 @@
-import { Stack } from "expo-router";
-import useThemeColors from "@/hooks/use-colors";
-import ChatHeader from "@/components/chat/chat-header";
+import { useAuth } from "@clerk/expo";
+import { Redirect, Stack } from "expo-router";
+import { ScreenSkeleton } from "@/components/ui/skeleton";
 
 export default function ChatLayout() {
-    const color = useThemeColors();
+    const { isSignedIn, isLoaded } = useAuth();
 
-    return (
-        <Stack
-            screenOptions={{
-                headerTitle: () => <ChatHeader />,
-                headerStyle: { backgroundColor: color.background },
-                headerBackVisible: false,
-            }}
-        >
-            <Stack.Screen name="[id]" options={{ title: "" }} />
-        </Stack>
-    );
+    if (!isLoaded) return <ScreenSkeleton tag="home" />;
+
+    if (!isSignedIn) return <Redirect href="/(auth)/sign-up" />;
+
+    return <Stack screenOptions={{ headerShown: false }} />;
 }

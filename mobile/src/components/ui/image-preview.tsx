@@ -82,9 +82,6 @@ export default function ImagePreview({ width, galleryImages, initialIndex = 0, c
                         keyExtractor={(item) => item.id}
                         onMomentumScrollEnd={(event) => handleGalleryScrollEnd(event.nativeEvent.contentOffset.x)}
                         getItemLayout={(_, index) => ({ length: width, offset: width * index, index })}
-                        onScrollToIndexFailed={({ index }) =>
-                            setTimeout(() => previewRef.current?.scrollToOffset({ offset: 84 * index, animated: true }), 50)
-                        }
                         renderItem={({ item }) => (
                             <View style={{ width }}>
                                 <Image source={{ uri: item.uri }} resizeMode="contain" className="size-full" accessibilityLabel={item.label} />
@@ -105,6 +102,9 @@ export default function ImagePreview({ width, galleryImages, initialIndex = 0, c
                             contentContainerStyle={{ gap: 12, paddingHorizontal: 4 }}
                             keyExtractor={(item) => `${item.id}-preview`}
                             getItemLayout={(_, index) => ({ length: 84, offset: 84 * index, index })}
+                            onScrollToIndexFailed={({ index }) =>
+                                setTimeout(() => previewRef.current?.scrollToOffset({ offset: 84 * index, animated: true }), 50)
+                            }
                             renderItem={({ item, index }) => {
                                 const isActive = index === activeImageIndex;
 

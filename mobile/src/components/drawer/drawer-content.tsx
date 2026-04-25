@@ -15,7 +15,10 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
 
     const { isLoaded, isSignedIn } = useAuth();
 
-    const { user, loading, error, retryUser } = useAuthStore();
+    const user = useAuthStore((s) => s.user);
+    const loading = useAuthStore((s) => s.loading);
+    const error = useAuthStore((s) => s.error);
+    const retryUser = useAuthStore((s) => s.retryUser);
     const { background, border, primary } = useThemeColors();
 
     const hasStoreMismatch = isLoaded && isSignedIn && !user;

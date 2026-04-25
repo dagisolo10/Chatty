@@ -1,17 +1,17 @@
 import { Colors } from "@/hooks/use-colors";
 import { Ionicons } from "@expo/vector-icons";
 import { View } from "@/components/ui/display";
-import { Input } from "@/components/ui/interactive";
+import { Button, Input } from "@/components/ui/interactive";
 
 interface SearchBarProp {
     color: Colors;
     query: string;
     showSearch: boolean;
-    setShowSearch: () => void;
+    toggleSearch: () => void;
     setQuery: (val: string) => void;
 }
 
-export default function ChatSearchBar({ showSearch, setShowSearch, color, query, setQuery }: SearchBarProp) {
+export default function ChatSearchBar({ showSearch, toggleSearch, color, query, setQuery }: SearchBarProp) {
     if (!showSearch) return null;
 
     return (
@@ -32,6 +32,9 @@ export default function ChatSearchBar({ showSearch, setShowSearch, color, query,
                     <Ionicons name="search" size={16} color={color.primary} />
                 </View>
             </View>
+            <Button variant="ghost" size="icon" onPress={toggleSearch} component>
+                <Ionicons name="close" size={20} color={color.foreground} />
+            </Button>
         </View>
     );
 }

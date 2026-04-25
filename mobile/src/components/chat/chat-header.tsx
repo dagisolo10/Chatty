@@ -1,25 +1,38 @@
 import ImagePreview from "../ui/image-preview";
 
 import { mockChats } from "@/mocks/chats";
-import { useMemo, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import useAuthStore from "@/store/auth-store";
 import useUtilStore from "@/store/util-store";
 import useThemeColors from "@/hooks/use-colors";
 import { Button } from "@/components/ui/interactive";
 import { Text, View } from "@/components/ui/display";
+import { useEffect, useMemo, useState } from "react";
 import { Image, useWindowDimensions } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
+import { Link, router, useLocalSearchParams } from "expo-router";
 
 export default function ChatHeader() {
-    const { width } = useWindowDimensions();
-    const { id } = useLocalSearchParams<{ id: string }>();
-    const user = useAuthStore((state) => state.user);
     const color = useThemeColors();
-    const { setShowSearch } = useUtilStore();
-    const [showMenu, setShowMenu] = useState(false);
+    const { width } = useWindowDimensions();
+    const user = useAuthStore((state) => state.user);
+    const { id } = useLocalSearchParams<{ id: string }>();
 
-    const chat = useMemo(() => mockChats(user?.name ?? "Saved messages").find((item) => item.id === id), [id, user?.name]);
+    const [showMenu, setShowMenu] = useState(false);
+    const toggleSearch = useUtilStore((state) => state.toggleSearch);
+
+    const chat = useMemo(() => mockChats().find((item) => item.id === id), [id]);
+
+    useEffect(() => {
+        return () => {
+            if (useUtilStore.getState().showSearch) useUtilStore.getState().toggleSearch();
+        };
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            if (showMenu) setShowMenu(false);
+        };
+    }, [showMenu]);
 
     if (!chat) return null;
 
@@ -55,14 +68,16 @@ export default function ChatHeader() {
                         )}
                     </View>
 
-                    <View className="flex-1">
-                        <Text className="text-foreground text-base font-bold">{title}</Text>
-                        <Text className="text-muted-foreground text-[12px]">Last Seen at {time}</Text>
-                    </View>
+                    <Link href={`/(chat)/${id}/details`} asChild>
+                        <View className="flex-1">
+                            <Text className="text-foreground text-base font-bold">{title}</Text>
+                            <Text className="text-muted-foreground text-[12px]">Last Seen at {time}</Text>
+                        </View>
+                    </Link>
                 </View>
 
                 <View className="row gap-2">
-                    <Button variant="ghost" size="icon" onPress={setShowSearch} component>
+                    <Button variant="ghost" size="icon" onPress={toggleSearch} component>
                         <Ionicons name="search" size={20} color={color.foreground} />
                     </Button>
 
@@ -77,6 +92,7 @@ export default function ChatHeader() {
                 <Text className="text-muted-foreground">{preview}</Text>
             </View>
 
+            {/* //TODO component is outside the main screen */}
             {showMenu && (
                 <View className="bg-card border-border absolute top-16 right-4 z-10 gap-2 rounded-lg border p-2">
                     <Button variant="ghost" size="sm" onPress={() => console.log("Go to first message")} component>

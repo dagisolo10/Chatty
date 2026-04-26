@@ -2,10 +2,10 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import { useSignIn } from "@clerk/expo";
-import useThemeColors from "@/constants/colors";
+import useThemeColors from "@/hooks/use-colors";
 import { ActivityIndicator } from "react-native";
-import { getClerkError } from "@/lib/helper-functions";
 import { ErrorMessage } from "@/components/ui/screen-ui";
+import { getClerkError } from "@/utils/helper-functions";
 import { Text, Screen, View } from "@/components/ui/display";
 import { Mail, EyeOff, Eye, Lock } from "lucide-react-native";
 import { Button, Input, NavLink } from "@/components/ui/interactive";
@@ -92,23 +92,12 @@ export default function SignIn() {
             </View>
 
             <View className="relative">
-                <Input
-                    value={password}
-                    onChangeText={setPassword}
-                    placeholder="Min. 8 characters"
-                    secureTextEntry={!passwordVisible}
-                    className={cn("pl-14", inputErrStyle.password)}
-                />
+                <Input value={password} onChangeText={setPassword} placeholder="Min. 8 characters" secureTextEntry={!passwordVisible} className={cn("pl-14", inputErrStyle.password)} />
                 <View className="absolute top-1/2 left-4 -translate-y-1/2">
                     <Lock color={iconErrStyle.password} size={18} />
                 </View>
 
-                <Button
-                    size={"icon"}
-                    variant={"ghost"}
-                    className={cn(password ? "block" : "hidden", "absolute top-1/2 right-2 -translate-y-1/2")}
-                    onPress={() => setPasswordVisible((visible) => !visible)}
-                >
+                <Button size={"icon"} variant={"ghost"} className={cn(password ? "block" : "hidden", "absolute top-1/2 right-2 -translate-y-1/2")} onPress={() => setPasswordVisible((visible) => !visible)}>
                     {passwordVisible ? <EyeOff color={mutedForeground} size={16} /> : <Eye color={mutedForeground} size={16} />}
                 </Button>
             </View>

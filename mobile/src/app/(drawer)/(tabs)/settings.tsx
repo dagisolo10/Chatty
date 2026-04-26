@@ -12,11 +12,13 @@ export default function Settings() {
             await signOut();
         } catch (e) {
             console.error("Sign‑out failed", e);
+            // TODO: surface to user via toast/ErrorMessage
+            clearUser();
         }
     }
 
     return (
-        <Screen noSafeArea onTab className="items-center justify-center gap-8">
+        <Screen className="items-center justify-center gap-8">
             <Text className="h1">Settings</Text>
 
             <Button onPress={logout} variant="primary">

@@ -12,6 +12,7 @@
     --accent: #ea7a53;
     --success: #16a34a;
     --destructive: #e35454;
+    --drawer: #5ea8dd;
 
     --card-foreground: #081126;
     --muted-foreground: #334155;
@@ -33,6 +34,7 @@
     --accent: #ff6569;
     --success: #00bc7d;
     --destructive: #e35454;
+    --drawer: #568bb5;
 
     --card-foreground: #ffffff;
     --muted-foreground: #73738c;
@@ -51,6 +53,7 @@
 
 @theme inline {
     --color-background: var(--background);
+    --color-drawer: var(--drawer);
     --color-foreground: var(--foreground);
 
     --color-dead-zone: var(--dead-zone);

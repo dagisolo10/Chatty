@@ -2,12 +2,12 @@ import { cn } from "@/lib/utils";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import Skeleton from "@/components/ui/skeleton";
-import useThemeColors from "@/constants/colors";
+import useThemeColors from "@/hooks/use-colors";
 import { ActivityIndicator } from "react-native";
 import { useAuth, useSignUp } from "@clerk/expo";
-import { validatePassword } from "@/lib/password";
-import { getClerkError } from "@/lib/helper-functions";
+import { validatePassword } from "@/utils/password";
 import { ErrorMessage } from "@/components/ui/screen-ui";
+import { getClerkError } from "@/utils/helper-functions";
 import { Text, Screen, View } from "@/components/ui/display";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react-native";
 import { Button, Input, NavLink } from "@/components/ui/interactive";
@@ -99,36 +99,19 @@ export default function SignUp() {
             </View>
 
             <View className="relative">
-                <Input
-                    value={emailAddress}
-                    autoCapitalize="none"
-                    placeholder="name@domain.com"
-                    className={cn("pl-14", inputErrStyle.email)}
-                    onChangeText={(val) => handleEmailChange(val)}
-                />
+                <Input value={emailAddress} autoCapitalize="none" placeholder="name@domain.com" className={cn("pl-14", inputErrStyle.email)} onChangeText={(val) => handleEmailChange(val)} />
                 <View className="absolute top-1/2 left-4 -translate-y-1/2">
                     <Mail color={iconErrStyle.email} size={18} />
                 </View>
             </View>
 
             <View className="relative">
-                <Input
-                    value={password}
-                    placeholder="Min. 8 characters"
-                    secureTextEntry={!passwordVisible}
-                    className={cn("pl-14", inputErrStyle.password)}
-                    onChangeText={(val) => handlePasswordChange(val)}
-                />
+                <Input value={password} placeholder="Min. 8 characters" secureTextEntry={!passwordVisible} className={cn("pl-14", inputErrStyle.password)} onChangeText={(val) => handlePasswordChange(val)} />
                 <View className="absolute top-1/2 left-4 -translate-y-1/2">
                     <Lock color={iconErrStyle.password} size={18} />
                 </View>
 
-                <Button
-                    size={"icon"}
-                    variant={"ghost"}
-                    onPress={() => setPasswordVisible((visible) => !visible)}
-                    className={cn(password ? "block" : "hidden", "absolute top-1/2 right-2 -translate-y-1/2")}
-                >
+                <Button size={"icon"} variant={"ghost"} onPress={() => setPasswordVisible((visible) => !visible)} className={cn(password ? "block" : "hidden", "absolute top-1/2 right-2 -translate-y-1/2")}>
                     {passwordVisible ? <EyeOff color={mutedForeground} size={16} /> : <Eye color={mutedForeground} size={16} />}
                 </Button>
             </View>

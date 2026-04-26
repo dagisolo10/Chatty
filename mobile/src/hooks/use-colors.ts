@@ -32,3 +32,5 @@ export default function useThemeColors() {
         return { ...staticColors, ...(isDark ? darkColors : lightColors) };
     }, [isDark]);
 }
+
+export type Colors = ReturnType<typeof useThemeColors>;

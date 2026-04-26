@@ -11,7 +11,7 @@ export default function OnboardingLayout() {
 
     if (!isSignedIn) return <Redirect href="/(auth)/sign-up" />;
 
-    if (user) return <Redirect href="/(main)" />;
+    if (user) return <Redirect href="/(drawer)/(tabs)" />;
 
     return <Stack screenOptions={{ headerShown: false }} />;
 }

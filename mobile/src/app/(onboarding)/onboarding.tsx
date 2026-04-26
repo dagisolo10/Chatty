@@ -6,13 +6,13 @@ import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import useAuthStore from "@/store/auth-store";
 import { UserResponse } from "@/types/response";
-import useThemeColors from "@/constants/colors";
+import useThemeColors from "@/hooks/use-colors";
 import * as ImagePicker from "expo-image-picker";
 import { CreateUserPayload } from "@/types/payloads";
 import { ActivityIndicator, Image } from "react-native";
 import { ErrorMessage } from "@/components/ui/screen-ui";
-import { sanitizeUsername } from "@/lib/helper-functions";
 import { Button, Input } from "@/components/ui/interactive";
+import { sanitizeUsername } from "@/utils/helper-functions";
 import { AtSign, Edit, UserRound } from "lucide-react-native";
 import { Field, Screen, Text, View } from "@/components/ui/display";
 
@@ -148,14 +148,7 @@ export default function Onboarding() {
 
             <Field label="Username">
                 <View className="relative">
-                    <Input
-                        value={username}
-                        className={cn("pl-12", inputErrStyle.username)}
-                        autoCorrect={false}
-                        autoCapitalize="none"
-                        placeholder="your_handle"
-                        onChangeText={(val) => handleUserNameChange(val)}
-                    />
+                    <Input value={username} className={cn("pl-12", inputErrStyle.username)} autoCorrect={false} autoCapitalize="none" placeholder="your_handle" onChangeText={(val) => handleUserNameChange(val)} />
                     <View className="absolute top-0 left-4 h-14 justify-center">
                         <AtSign color={iconErrStyle.username} size={18} />
                     </View>
@@ -164,15 +157,7 @@ export default function Onboarding() {
 
             <Field label="Bio">
                 <View className="min-h-32">
-                    <Input
-                        multiline
-                        value={bio}
-                        maxLength={160}
-                        onChangeText={setBio}
-                        textAlignVertical="top"
-                        className="flex-1 pt-4"
-                        placeholder="Tell people a little about you..."
-                    />
+                    <Input multiline value={bio} maxLength={160} onChangeText={setBio} textAlignVertical="top" className="flex-1 pt-4" placeholder="Tell people a little about you..." />
                 </View>
             </Field>
 

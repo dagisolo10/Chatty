@@ -7,23 +7,9 @@ export default function ChatLayout() {
     const color = useThemeColors();
 
     return (
-        <Stack>
-            <Stack.Screen
-                name="index"
-                options={{
-                    headerBackVisible: false,
-                    headerTitle: () => <ChatHeader />,
-                    headerStyle: { backgroundColor: color.background },
-                }}
-            />
-            <Stack.Screen
-                name="details"
-                options={{
-                    headerBackVisible: false,
-                    headerTitle: () => <DetailsHeader />,
-                    headerStyle: { backgroundColor: color.background },
-                }}
-            />
+        <Stack screenOptions={{ headerStyle: { backgroundColor: color.background }, headerBackVisible: false }}>
+            <Stack.Screen name="index" options={{ headerTitle: () => <ChatHeader /> }} />
+            <Stack.Screen name="details" options={{ headerTitle: () => <DetailsHeader /> }} />
         </Stack>
     );
 }

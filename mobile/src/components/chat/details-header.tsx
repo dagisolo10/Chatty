@@ -1,8 +1,9 @@
 import { Button } from "../ui/interactive";
 
+import { useMemo } from "react";
 import { mockChats } from "@/mocks/chats";
-import { useMemo, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import useUtilStore from "@/store/util-store";
 import useThemeColors from "@/hooks/use-colors";
 import { Text, View } from "@/components/ui/display";
 import { router, useLocalSearchParams } from "expo-router";
@@ -11,11 +12,19 @@ export default function DetailsHeader() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const color = useThemeColors();
 
-    const [showMenu, setShowMenu] = useState(false);
+    const toggleDetailMenu = useUtilStore((state) => state.toggleDetailMenu);
 
     const chat = useMemo(() => mockChats().find((item) => item.id === id), [id]);
 
-    if (!chat) return null;
+    if (!chat) {
+        return (
+            <View className="justify-start">
+                <Button onPress={() => router.back()} variant={"ghost"} size={"icon"} className="" component>
+                    <Ionicons name="arrow-back" size={20} color={color.foreground} />
+                </Button>
+            </View>
+        );
+    }
 
     const { title, time } = chat;
 
@@ -33,27 +42,10 @@ export default function DetailsHeader() {
                     </View>
                 </View>
 
-                <Button variant="ghost" size="icon" onPress={() => setShowMenu((prev) => !prev)} component>
+                <Button variant="ghost" size="icon" onPress={toggleDetailMenu} component>
                     <Ionicons name="ellipsis-vertical" size={20} color={color.foreground} />
                 </Button>
             </View>
-
-            {showMenu && (
-                <View className="bg-accent absolute right-0 bottom-0 z-100 gap-2 rounded-lg p-2">
-                    <Button variant="ghost" size="sm" onPress={() => console.log("Go to first message")} component>
-                        <Text>Go to first message</Text>
-                    </Button>
-                    <Button variant="ghost" size="sm" onPress={() => console.log("Clear history")} component>
-                        <Text>Clear history</Text>
-                    </Button>
-                    <Button variant="ghost" size="sm" onPress={() => console.log("Delete chat")} component>
-                        <Text>Delete chat</Text>
-                    </Button>
-                    <Button variant="ghost" size="sm" onPress={() => console.log("Muted")} component>
-                        <Text>Muted</Text>
-                    </Button>
-                </View>
-            )}
         </View>
     );
 }

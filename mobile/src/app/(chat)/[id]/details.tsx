@@ -1,41 +1,64 @@
 import { mockChats } from "@/mocks/chats";
-import { useMemo, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { Menu } from "@/components/chat/menu";
 import useAuthStore from "@/store/auth-store";
+import useUtilStore from "@/store/util-store";
 import useThemeColors from "@/hooks/use-colors";
-import { useLocalSearchParams } from "expo-router";
 import { Button } from "@/components/ui/interactive";
+import { useEffect, useMemo, useState } from "react";
 import ImagePreview from "@/components/ui/image-preview";
 import { Image, useWindowDimensions } from "react-native";
+import { useLocalSearchParams, router } from "expo-router";
 import { Card, Screen, Text, View } from "@/components/ui/display";
 
 export default function ProfileDetail() {
     const color = useThemeColors();
     const { width } = useWindowDimensions();
     const user = useAuthStore((state) => state.user);
+    const showDetailMenu = useUtilStore((s) => s.showDetailMenu);
     const { id } = useLocalSearchParams<{ id: string }>();
 
     const [muted, setMuted] = useState(false);
 
     const chat = useMemo(() => mockChats().find((item) => item.id === id), [id]);
 
-    const galleryImages = user?.profile ? Array.from({ length: 6 }, (_, index) => ({ id: `${user.id}-profile-${index}`, uri: user.profile!, label: `Profile photo ${index + 1}` })) : [];
+    useEffect(() => {
+        return () => {
+            if (useUtilStore.getState().showDetailMenu) useUtilStore.getState().toggleDetailMenu();
+        };
+    }, []);
 
-    const profile = user?.profile;
-    const chatTitle = chat?.title ?? "Unknown";
-    const status = chat?.online ? "online now" : `Last seen at ${chat?.time ?? "--:--"}`;
+    if (!chat || !user) {
+        return (
+            <Screen noSafeArea className="gap-6 pt-4">
+                <View className="flex-1 items-center justify-center gap-4">
+                    <Text className="h3">Chat or user not found</Text>
+                    <Button onPress={() => router.back()} variant="outline" component>
+                        <Text>Go Back</Text>
+                    </Button>
+                </View>
+            </Screen>
+        );
+    }
+
+    const galleryImages = user.profile ? Array.from({ length: 6 }, (_, index) => ({ id: `${user.id}-profile-${index}`, uri: user.profile!, label: `Profile photo ${index + 1}` })) : [];
+
+    const profile = user.profile;
+    const chatTitle = chat.title;
+    const username = `@${chatTitle.toLowerCase().replace(/\s+/g, "_")}`;
+    const status = chat.online ? "online now" : `Last seen at ${chat.time ?? "--:--"}`;
     const initials =
-        (user?.name || chatTitle)
+        (user.name || chatTitle)
             .split(" ")
             .map((part) => part[0])
             .join("")
             .slice(0, 2)
             .toUpperCase() || "U";
 
-    if (!chat) return null;
-
     return (
         <Screen noSafeArea className="gap-6 pt-4">
+            <Menu show={showDetailMenu} tag="details" />
+
             <Card variant={"muted"} className="items-center gap-4">
                 <View className="gap-4">
                     {profile ? (
@@ -88,12 +111,12 @@ export default function ProfileDetail() {
 
             <Card variant={"muted"} className="gap-4">
                 <View className="gap-1">
-                    <Text className="text-primary text-xl font-bold">+251 947723205</Text>
+                    <Text className="text-primary text-xl font-bold">+251 91 112 3456</Text>
                     <Text className="text-muted-foreground text-xs">Mobile</Text>
                 </View>
 
                 <View className="gap-1">
-                    <Text className="text-primary text-xl font-bold">@{chatTitle.toLowerCase().replace(/\s+/g, "_")}</Text>
+                    <Text className="text-primary text-xl font-bold">{username}</Text>
                     <Text className="text-muted-foreground text-xs">Username</Text>
                 </View>
 

@@ -16,18 +16,17 @@ export default function MainLayout() {
     if (!isSignedIn) return <Redirect href="/(auth)/sign-up" />;
 
     const options: DrawerNavigationOptions = {
-        drawerType: "front",
-        drawerStyle: { width: 320 },
         headerShadowVisible: false,
+        drawerStyle: { width: 320 },
         headerTintColor: color.foreground,
         drawerActiveTintColor: color.foreground,
         drawerActiveBackgroundColor: color.card,
         headerTitleStyle: { marginLeft: 16 },
         drawerInactiveTintColor: color.mutedForeground,
+        headerStyle: { backgroundColor: color.background },
+        drawerLabelStyle: { fontSize: 15, fontWeight: "700" },
+        drawerItemStyle: { borderRadius: 12, marginVertical: 2 },
         drawerContentStyle: { backgroundColor: color.background },
-        drawerLabelStyle: { marginLeft: 0, fontSize: 15, fontWeight: "700" },
-        headerStyle: { backgroundColor: color.background, borderBottomColor: color.border },
-        drawerItemStyle: { borderRadius: 12, marginHorizontal: 0, marginVertical: 2, paddingHorizontal: 4 },
     };
 
     return (

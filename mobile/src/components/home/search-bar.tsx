@@ -1,10 +1,11 @@
+import DrawerToggle from "../drawer/custom-drawer-toggle";
+
 import { Colors } from "@/hooks/use-colors";
 import { Ionicons } from "@expo/vector-icons";
 import { View } from "@/components/ui/display";
 import Animated from "react-native-reanimated";
 import { Dispatch, SetStateAction } from "react";
-import { Button, Input } from "@/components/ui/interactive";
-import { DrawerActions, useNavigation } from "@react-navigation/native";
+import { Input } from "@/components/ui/interactive";
 
 interface SearchBarProps {
     query: string;
@@ -14,22 +15,10 @@ interface SearchBarProps {
 }
 
 export default function SearchBar({ query, setQuery, color, animatedStyle }: SearchBarProps) {
-    const navigation = useNavigation();
-
     return (
         <Animated.View style={animatedStyle}>
             <View className="flex-row items-center gap-3">
-                <Button
-                    component
-                    size="icon"
-                    variant="outline"
-                    accessibilityRole="button"
-                    accessibilityLabel="Toggle drawer"
-                    onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
-                    className="bg-muted size-11 rounded-full"
-                >
-                    <Ionicons name="menu" size={20} color={color.foreground} />
-                </Button>
+                <DrawerToggle />
 
                 <View className="relative flex-1">
                     <Input

@@ -11,15 +11,9 @@ import ChatEmptyState from "@/components/home/chat-empty-state";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LoadingScreen, MisMatch } from "@/components/ui/screen-ui";
 import ChatListItem, { ChatListItemData } from "@/components/home/chat-list-item";
-import Animated, {
-    Extrapolation,
-    interpolate,
-    useAnimatedScrollHandler,
-    useAnimatedStyle,
-    useAnimatedProps,
-    useSharedValue,
-    withTiming,
-} from "react-native-reanimated";
+import Animated, { Extrapolation, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useAnimatedProps, useSharedValue, withTiming } from "react-native-reanimated";
+
+let chromeInitialized = false;
 
 export default function Home() {
     const color = useThemeColors();
@@ -33,11 +27,15 @@ export default function Home() {
 
     const filterVisibility = useSharedValue(1);
     const searchVisibility = useSharedValue(1);
-    const chromeOpacity = useSharedValue(0);
+    const chromeOpacity = useSharedValue(chromeInitialized ? 1 : 0);
 
     useEffect(() => {
-        chromeOpacity.value = withTiming(1, { duration: 300 });
+        if (!chromeInitialized) {
+            chromeOpacity.value = withTiming(1, { duration: 300 });
+            chromeInitialized = true;
+        }
     }, [chromeOpacity]);
+
     const previousOffset = useSharedValue(0);
 
     const chats = useMemo<ChatListItemData[]>(() => mockChats(), []);

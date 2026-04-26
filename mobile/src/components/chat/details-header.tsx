@@ -19,7 +19,7 @@ export default function DetailsHeader() {
     if (!chat) {
         return (
             <View className="justify-start">
-                <Button onPress={() => router.back()} variant={"ghost"} size={"icon"} className="" component>
+                <Button onPress={() => router.back()} variant={"ghost"} size={"icon"} component>
                     <Ionicons name="arrow-back" size={20} color={color.foreground} />
                 </Button>
             </View>

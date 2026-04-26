@@ -4,16 +4,13 @@ import { mockChats } from "@/mocks/chats";
 import useAuthStore from "@/store/auth-store";
 import useThemeColors from "@/hooks/use-colors";
 import { Screen } from "@/components/ui/display";
-import { useMemo, useState, useEffect } from "react";
-import SearchBar from "@/components/home/search-bar";
-import ChatFilters from "@/components/home/chat-filters";
+import Header from "@/components/home/home-header";
+import { useMemo, useState, useEffect, useRef } from "react";
 import ChatEmptyState from "@/components/home/chat-empty-state";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LoadingScreen, MisMatch } from "@/components/ui/screen-ui";
 import ChatListItem, { ChatListItemData } from "@/components/home/chat-list-item";
 import Animated, { Extrapolation, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useAnimatedProps, useSharedValue, withTiming } from "react-native-reanimated";
-
-let chromeInitialized = false;
 
 export default function Home() {
     const color = useThemeColors();
@@ -25,14 +22,15 @@ export default function Home() {
 
     const [query, setQuery] = useState("");
 
+    const chromeInitializedRef = useRef(false);
     const filterVisibility = useSharedValue(1);
     const searchVisibility = useSharedValue(1);
-    const chromeOpacity = useSharedValue(chromeInitialized ? 1 : 0);
+    const chromeOpacity = useSharedValue(chromeInitializedRef.current ? 1 : 0);
 
     useEffect(() => {
-        if (!chromeInitialized) {
+        if (!chromeInitializedRef.current) {
             chromeOpacity.value = withTiming(1, { duration: 300 });
-            chromeInitialized = true;
+            chromeInitializedRef.current = true;
         }
     }, [chromeOpacity]);
 
@@ -49,16 +47,11 @@ export default function Home() {
         });
     }, [activeFilter, chats, query]);
 
-    const searchBarAnimatedStyle = useAnimatedStyle(() => ({
+    const animatedStyle = useAnimatedStyle(() => ({
         opacity: searchVisibility.value,
         transform: [{ translateY: interpolate(searchVisibility.value, [0, 1], [-18, 0], Extrapolation.CLAMP) }],
-    }));
-
-    const filtersAnimatedStyle = useAnimatedStyle(() => ({
-        opacity: filterVisibility.value,
         height: interpolate(filterVisibility.value, [0, 1], [0, 52], Extrapolation.CLAMP),
         marginTop: interpolate(filterVisibility.value, [0, 1], [0, 12], Extrapolation.CLAMP),
-        transform: [{ translateY: interpolate(filterVisibility.value, [0, 1], [-16, 0], Extrapolation.CLAMP) }],
     }));
 
     const chromeAnimatedStyle = useAnimatedStyle(() => ({
@@ -103,9 +96,8 @@ export default function Home() {
 
     return (
         <Screen nonScrollable noSafeArea className="pb-0">
-            <Animated.View style={[{ paddingTop: insets.top + 16 }, chromeAnimatedStyle]} className="absolute top-0 right-0 left-0 z-20 gap-2 px-4">
-                <SearchBar query={query} setQuery={setQuery} color={color} animatedStyle={searchBarAnimatedStyle} />
-                <ChatFilters activeFilter={activeFilter} setActiveFilter={setActiveFilter} animatedStyle={filtersAnimatedStyle} />
+            <Animated.View style={[{ paddingTop: insets.top }, chromeAnimatedStyle]} className="absolute top-0 right-0 left-0 z-100 px-4">
+                <Header query={query} setQuery={setQuery} color={color} activeFilter={activeFilter} setActiveFilter={setActiveFilter} animatedStyle={animatedStyle} />
             </Animated.View>
 
             <Animated.FlatList
@@ -122,5 +114,3 @@ export default function Home() {
         </Screen>
     );
 }
-
-// TODO fix the animated flat-list

@@ -27,21 +27,21 @@ export default function TabsLayout() {
                 options={{
                     title: "Home",
                     headerShown: false,
-                    tabBarIcon: ({ size, focused }) => <Ionicons name={focused ? "chatbubble" : "chatbubble-outline"} size={size} color={focused ? color.primary : color.mutedForeground} />,
+                    tabBarIcon: ({ size, focused, color }) => <Ionicons name={focused ? "chatbubble" : "chatbubble-outline"} size={size} color={color} />,
                 }}
             />
             <Tabs.Screen
                 name="contacts"
                 options={{
                     title: "Contacts",
-                    tabBarIcon: ({ size, focused }) => <Ionicons name={focused ? "person" : "person-outline"} size={size} color={focused ? color.primary : color.mutedForeground} />,
+                    tabBarIcon: ({ size, focused, color }) => <Ionicons name={focused ? "person" : "person-outline"} size={size} color={color} />,
                 }}
             />
             <Tabs.Screen
                 name="settings"
                 options={{
                     title: "Settings",
-                    tabBarIcon: ({ size, focused }) => <Ionicons name={focused ? "settings" : "settings-outline"} size={size} color={focused ? color.primary : color.mutedForeground} />,
+                    tabBarIcon: ({ size, focused, color }) => <Ionicons name={focused ? "settings" : "settings-outline"} size={size} color={color} />,
                 }}
             />
         </Tabs>

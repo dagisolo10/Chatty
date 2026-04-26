@@ -96,7 +96,7 @@ export default function Home() {
 
     return (
         <Screen nonScrollable noSafeArea className="pb-0">
-            <Animated.View style={[{ paddingTop: insets.top }, chromeAnimatedStyle]} className="absolute top-0 right-0 left-0 z-100 px-4">
+            <Animated.View style={[{ paddingTop: insets.top }, chromeAnimatedStyle]} className="bg-background absolute top-0 right-0 left-0 z-100 px-4">
                 <Header query={query} setQuery={setQuery} color={color} activeFilter={activeFilter} setActiveFilter={setActiveFilter} animatedStyle={animatedStyle} />
             </Animated.View>
 

@@ -6,6 +6,6 @@ const roomRoute = Router();
 
 roomRoute.post("/create", protect, createRoom);
 roomRoute.get("/list", protect, getRooms);
-roomRoute.get("/messages/:id", protect, getConversation);
+roomRoute.get("/:id", protect, getConversation);
 
 export default roomRoute;

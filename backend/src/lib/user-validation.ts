@@ -11,15 +11,35 @@ export function sanitizeUsername(value: string): string {
 }
 
 export const createUserPayloadSchema = z.object({
-    name: z.string().trim().min(3, "Display name must be at least 3 characters long."),
-    username: z.string().transform(sanitizeUsername).pipe(z.string().min(3, "Username must be at least 3 characters long after sanitization.")),
+    name: z.string().trim().min(3, "Display name must be at least 3 characters long"),
+    username: z.string().transform(sanitizeUsername).pipe(z.string().min(3, "Username must be at least 3 characters long after sanitization")),
     bio: z
         .string()
         .trim()
-        .max(160, "Bio must be 160 characters or fewer.")
+        .max(160, "Bio must be 160 characters or fewer")
         .optional()
         .transform((bio: string | undefined) => (bio && bio.length > 0 ? bio : undefined)),
-    profile: z.string().trim().optional(),
+    profile: z
+        .string()
+        .trim()
+        .transform((profile: string | undefined) => (profile && profile.length > 0 ? profile : null))
+        .optional(),
+});
+
+export const updateUserPayloadSchema = z.object({
+    name: z.string().trim().min(3, "Display name must be at least 3 characters long").optional(),
+    username: z.string().transform(sanitizeUsername).pipe(z.string().min(3, "Username must be at least 3 characters long after sanitization")).optional(),
+    bio: z
+        .string()
+        .trim()
+        .max(160, "Bio must be 160 characters or fewer")
+        .optional()
+        .transform((bio: string | undefined) => (bio && bio.length > 0 ? bio : null)),
+    profile: z
+        .string()
+        .trim()
+        .transform((profile: string | undefined) => (profile && profile.length > 0 ? profile : null))
+        .optional(),
 });
 
 export type CreateUserPayload = z.infer<typeof createUserPayloadSchema>;

@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(clerkMiddleware());
 app.use(cors({ origin: [ENV.CLIENT_URL], credentials: true }));
 
-app.use("/auth", userRoute);
+app.use("/user", userRoute);
 app.use("/message", messageRoute);
 app.use("/room", roomRoute);
 

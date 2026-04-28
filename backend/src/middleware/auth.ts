@@ -3,9 +3,11 @@ import type { Request, Response, NextFunction } from "express";
 
 export default async function protect(req: Request, res: Response, next: NextFunction) {
     try {
-        const { userId } = getAuth(req);
+        // const { userId } = getAuth(req);
 
-        if (!userId) return res.status(401).json({ error: "Unauthorized", success: false });
+        // if (!userId) return res.status(401).json({ error: "Unauthorized", success: false });
+        const userId = process.env.MALCOM!;
+        // const userId = process.env.JASON!;
 
         req.userId = userId;
 

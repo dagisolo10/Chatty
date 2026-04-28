@@ -1,13 +1,13 @@
 import ImagePreview from "../ui/image-preview";
 
 import { mockChats } from "@/mocks/chats";
+import { useEffect, useMemo } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import useAuthStore from "@/store/auth-store";
 import useUtilStore from "@/store/util-store";
 import useThemeColors from "@/hooks/use-colors";
 import { Button } from "@/components/ui/interactive";
 import { Text, View } from "@/components/ui/display";
-import { useEffect, useMemo } from "react";
 import { Link, router, useLocalSearchParams } from "expo-router";
 import { Image, Pressable, useWindowDimensions } from "react-native";
 
@@ -87,11 +87,12 @@ export default function ChatHeader() {
                 </View>
             </View>
 
-            <View className="border-primary gap-1 border-l-2 pl-2">
-                <Text className="text-primary">Bio</Text>
-                <Text className="text-muted-foreground">{preview}</Text>
-            </View>
-
+            {preview && (
+                <View className="border-primary gap-1 border-l-2 pl-2">
+                    <Text className="text-primary">Bio</Text>
+                    <Text className="text-muted-foreground">{preview}</Text>
+                </View>
+            )}
         </View>
     );
 }

@@ -1,13 +1,13 @@
 import prisma from "@/lib/prisma.js";
-import { createUserPayloadSchema } from "@/lib/user-validation.js";
 import wrapper from "@/util/action-wrapper.js";
 import type { Request, Response } from "express";
+import { createUserPayloadSchema } from "@/lib/user-validation.js";
 
 export async function syncUser(req: Request, res: Response) {
     const result = await wrapper(async () => {
         const id = req.userId;
 
-        if (!id) throw new Error("User ID missing from verified token");
+        if (!id) throw new Error("Unauthorized. Login First");
 
         const parsedPayload = createUserPayloadSchema.safeParse(req.body);
         if (!parsedPayload.success) {
@@ -63,14 +63,34 @@ export async function getUser(req: Request, res: Response) {
     return !result.success ? res.status(400).json(result) : res.status(200).json(result);
 }
 
-export async function searchUserByName(req: Request, res: Response) {
-    const result = await wrapper(async () => {}, "getUserByName");
+export async function searchUser(req: Request, res: Response) {
+    const result = await wrapper(async () => {
+        const name = req.query.name as string | undefined;
+        const username = req.query.username as string | undefined;
 
-    return !result.success ? res.status(400).json(result) : res.status(200).json(result);
-}
+        if (!name && !username) {
+            throw new Error("Provide at least a name or username to search");
+        }
 
-export async function searchUserByUsername(req: Request, res: Response) {
-    const result = await wrapper(async () => {}, "getUserByUsername");
+        const users = await prisma.user.findMany({
+            where: {
+                OR: [
+                    name
+                        ? {
+                              name: { contains: name, mode: "insensitive" },
+                          }
+                        : {},
+                    username
+                        ? {
+                              username: { contains: username, mode: "insensitive" },
+                          }
+                        : {},
+                ],
+            },
+        });
+
+        return users;
+    }, "searchUser");
 
     return !result.success ? res.status(400).json(result) : res.status(200).json(result);
 }

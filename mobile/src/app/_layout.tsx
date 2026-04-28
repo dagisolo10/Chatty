@@ -11,11 +11,8 @@ import { tokenCache } from "@clerk/expo/token-cache";
 import { ScreenSkeleton } from "@/components/ui/skeleton";
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
-const token = process.env.EXPO_PUBLIC_TOKEN!;
 
 if (!publishableKey) throw new Error("Add your Clerk Publishable Key to the .env file");
-
-if (!token) throw new Error("Add token to the .env file");
 
 export default function RootLayout() {
     const { isDark } = useTheme();
@@ -39,16 +36,9 @@ export default function RootLayout() {
 export function AuthBootstrap({ children }: { children: ReactNode }) {
     const { getToken, isLoaded, isSignedIn } = useAuth();
 
-    // const [isLoaded, setIsLoaded] = useState<boolean>(false);
-
     const user = useAuthStore((state) => state.user);
     const getUser = useAuthStore((state) => state.getUser);
     const clearUser = useAuthStore((state) => state.clearUser);
-    // const isSignedIn = useAuthStore((state) => state.isSignedIn);
-
-    // useEffect(() => {
-    //     setTimeout(() => setIsLoaded(true), 100);
-    // }, []);
 
     useEffect(() => {
         if (!isLoaded) return;

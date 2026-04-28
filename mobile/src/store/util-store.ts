@@ -2,19 +2,21 @@ import { create } from "zustand";
 
 interface Util {
     showSearch: boolean;
-    toggleSearch: () => void;
     showChatMenu: boolean;
-    toggleChatMenu: () => void;
     showDetailMenu: boolean;
+
+    toggleSearch: () => void;
+    toggleChatMenu: () => void;
     toggleDetailMenu: () => void;
 }
 
 const useUtilStore = create<Util>((set) => ({
     showSearch: false,
-    toggleSearch: () => set((state) => ({ showSearch: !state.showSearch })),
     showChatMenu: false,
-    toggleChatMenu: () => set((state) => ({ showChatMenu: !state.showChatMenu })),
     showDetailMenu: false,
+
+    toggleSearch: () => set((state) => ({ showSearch: !state.showSearch })),
+    toggleChatMenu: () => set((state) => ({ showChatMenu: !state.showChatMenu })),
     toggleDetailMenu: () => set((state) => ({ showDetailMenu: !state.showDetailMenu })),
 }));
 

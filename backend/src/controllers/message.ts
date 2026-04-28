@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma.js";
 import wrapper from "@/util/action-wrapper.js";
 import type { Request, Response } from "express";
 import { Server as SocketServer } from "socket.io";
-import type { MessageType, Room } from "@prisma/client";
+import { Prisma, type MessageType } from "@prisma/client";
 import type { ClientToServerEvents, ServerToClientEvents } from "@/types/socket-events.js";
 
 export async function sendMessage(req: Request, res: Response) {
@@ -32,25 +32,33 @@ export async function sendMessage(req: Request, res: Response) {
                     include: { members: true },
                 });
             } else if (!roomId && recipientId) {
-                existingRoom = await tx.room.findFirst({
-                    where: {
-                        type: "Private",
-                        AND: [{ members: { some: { userId: senderId } } }, { members: { some: { userId: recipientId } } }],
-                    },
+                const privateRoomKey = [senderId, recipientId].sort().join("|");
+
+                existingRoom = await tx.room.findUnique({
+                    where: { privateKey: privateRoomKey },
                     include: { members: true, messages: true },
                 });
 
-                if (existingRoom && existingRoom.members?.length !== 2) existingRoom = null;
-
                 if (!existingRoom) {
-                    existingRoom = await tx.room.create({
-                        data: {
-                            type: "Private",
-                            members: {
-                                create: [{ userId: senderId }, { userId: recipientId }],
+                    try {
+                        existingRoom = await tx.room.create({
+                            data: {
+                                type: "Private",
+                                privateKey: privateRoomKey,
+                                members: { create: [{ userId: senderId }, { userId: recipientId }] },
                             },
-                        },
-                    });
+                            include: { members: true, messages: true },
+                        });
+                    } catch (error) {
+                        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+                            existingRoom = await tx.room.findUnique({
+                                where: { privateKey: privateRoomKey },
+                                include: { members: true, messages: true },
+                            });
+                        } else {
+                            throw error;
+                        }
+                    }
                 }
             }
 
@@ -68,10 +76,7 @@ export async function sendMessage(req: Request, res: Response) {
 
             await tx.room.update({
                 where: { id: existingRoom.id },
-                data: {
-                    lastMessage: message.trim(),
-                    lastMessageAt: newMessage.createdAt,
-                },
+                data: { lastMessage: message.trim(), lastMessageAt: newMessage.createdAt },
             });
 
             await tx.member.updateMany({

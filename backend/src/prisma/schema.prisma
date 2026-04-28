@@ -37,6 +37,7 @@ model Room {
     name          String?
     inviteCode    String?   @unique
     type          RoomType  @default(Private)
+    privateKey    String?   @unique
     lastMessage   String?
     lastMessageAt DateTime?
     members       Member[]

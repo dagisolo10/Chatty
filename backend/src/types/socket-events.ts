@@ -7,6 +7,8 @@ export interface ServerToClientEvents {
     messageDeleted: (messageId: string, roomId: string) => void;
     userStartedTyping: (userId: string, roomId: string) => void;
     userStoppedTyping: (userId: string, roomId: string) => void;
+    roomJoinError: (roomId: string, message: string) => void;
+    roomLeaveError: (roomId: string, message: string) => void;
 }
 
 export interface ClientToServerEvents {

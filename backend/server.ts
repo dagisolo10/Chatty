@@ -8,6 +8,8 @@ const port = process.env.PORT;
 
 const server = createServer(app);
 
-initializeSocket(server);
+const io = initializeSocket(server);
+
+app.set("io", io);
 
 server.listen(port, () => console.log(`🚀 Server running at http://localhost:${port}`));

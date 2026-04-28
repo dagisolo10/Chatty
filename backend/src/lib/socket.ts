@@ -1,3 +1,4 @@
+import prisma from "@/lib/prisma.js";
 import type { Server as HttpServer } from "http";
 import { Server as SocketServer } from "socket.io";
 import type { Message, User } from "@prisma/client";
@@ -17,16 +18,42 @@ export default function initializeSocket(server: HttpServer) {
             socket.data.userId = user.id;
             const currentSockets = userSocketMap.get(user.id) || [];
             userSocketMap.set(user.id, [...currentSockets, socket.id]);
-            socket.emit("onlineUsers", Array.from(userSocketMap.keys()));
+            io.emit("onlineUsers", Array.from(userSocketMap.keys()));
             console.log(`✅ Socket.IO Connected. ${user.name} is online`);
         });
 
-        socket.on("joinRoom", (roomId: string) => {
+        socket.on("joinRoom", async (roomId: string) => {
+            const userId = socket.data.userId;
+            if (!userId) {
+                socket.emit("roomJoinError", roomId, "Unauthorized: missing socket user id");
+                return;
+            }
+
+            const isMember = await prisma.room.findFirst({ where: { id: roomId, members: { some: { userId } } }, select: { id: true } });
+
+            if (!isMember) {
+                socket.emit("roomJoinError", roomId, "Unauthorized: not a member of the room");
+                return;
+            }
+
             socket.join(roomId);
             console.log(`User ${socket.id} joined room ${roomId}`);
         });
 
-        socket.on("leaveRoom", (roomId: string) => {
+        socket.on("leaveRoom", async (roomId: string) => {
+            const userId = socket.data.userId;
+            if (!userId) {
+                socket.emit("roomLeaveError", roomId, "Unauthorized: missing socket user id");
+                return;
+            }
+
+            const isMember = await prisma.room.findFirst({ where: { id: roomId, members: { some: { userId } } }, select: { id: true } });
+
+            if (!isMember) {
+                socket.emit("roomLeaveError", roomId, "Unauthorized: not a member of the room");
+                return;
+            }
+
             socket.leave(roomId);
             console.log(`User ${socket.id} left room ${roomId}`);
         });
@@ -71,3 +98,15 @@ export default function initializeSocket(server: HttpServer) {
 
     return io;
 }
+
+// Verify each finding against the current code and only fix it if needed.
+
+// In `@backend/src/lib/socket.ts` around lines 16 - 22, The socket handler
+// socket.on("isOnline") currently trusts a client-supplied User and writes
+// socket.data.userId and updates userSocketMap from user.id—replace this by
+// validating authentication server-side: extract the auth token/session from
+// socket.handshake (or call the auth service/JWT verifier), resolve the real user
+// id from that verification, set socket.data.userId to the verified id, and update
+// userSocketMap using the verified id; also audit related handlers
+// (send/edit/delete/typing) to ensure they check socket.data.userId (the verified
+// identity) rather than any client-provided id before performing actions.

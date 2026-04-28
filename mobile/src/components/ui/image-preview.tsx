@@ -37,6 +37,7 @@ export default function ImagePreview({ width, galleryImages, initialIndex = 0, c
         setActiveImageIndex(clamped);
         pendingIndexRef.current = clamped;
         setGalleryVisible(true);
+        setShowPreview(true);
     }
 
     function handleGalleryScrollEnd(offsetX: number) {
@@ -59,12 +60,13 @@ export default function ImagePreview({ width, galleryImages, initialIndex = 0, c
     const opacity = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
+        if (!galleryVisible) return;
         Animated.timing(opacity, {
             toValue: showPreview ? 1 : 0,
             duration: 200,
             useNativeDriver: true,
         }).start();
-    }, [opacity, showPreview]);
+    }, [galleryVisible, opacity, showPreview]);
 
     return (
         <>

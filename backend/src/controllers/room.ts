@@ -108,12 +108,12 @@ export async function getConversation(req: Request, res: Response) {
 
             if (!room) throw new Error("Room not found");
 
-            await tx.member.updateMany({
+            const updatedRoom = await tx.member.updateMany({
                 where: { roomId, userId },
                 data: { lastReadAt: new Date() },
             });
 
-            return room;
+            return updatedRoom;
         });
 
         return result;

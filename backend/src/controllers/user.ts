@@ -1,9 +1,10 @@
 import prisma from "@/lib/prisma.js";
+import type { User } from "@prisma/client";
 import wrapper from "@/util/action-wrapper.js";
 import type { Request, Response } from "express";
-import { createUserPayloadSchema } from "@/lib/user-validation.js";
+import { createUserPayloadSchema, updateUserPayloadSchema } from "@/lib/user-validation.js";
 
-export async function syncUser(req: Request, res: Response) {
+export async function createUser(req: Request, res: Response) {
     const result = await wrapper(async () => {
         const id = req.userId;
 
@@ -21,28 +22,54 @@ export async function syncUser(req: Request, res: Response) {
             throw new Error("Username is already taken by another account.");
         }
 
-        const updateData: any = {};
-        if (name) updateData.name = name;
-        if (username) updateData.username = username;
-        if (bio !== undefined) updateData.bio = bio;
-        if (profile !== undefined) updateData.profile = profile;
-
         const createData = {
             id,
             name,
             username,
-            ...(profile !== undefined ? { profile } : {}),
             ...(bio !== undefined ? { bio } : {}),
+            ...(profile !== undefined ? { profile } : {}),
         };
 
-        const user = await prisma.user.upsert({
-            where: { id },
-            create: createData,
-            update: updateData,
-        });
+        const user = await prisma.user.create({ data: createData });
 
         return user;
-    }, "syncUser");
+    }, "createUser");
+
+    return !result.success ? res.status(400).json(result) : res.status(200).json(result);
+}
+
+export async function updateUser(req: Request, res: Response) {
+    const result = await wrapper(async () => {
+        const id = req.userId;
+
+        if (!id) throw new Error("Unauthorized. Login First");
+
+        const parsedPayload = updateUserPayloadSchema.safeParse(req.body);
+        if (!parsedPayload.success) {
+            throw new Error(parsedPayload.error.issues.map((iss) => iss.message).join(", ") || "Invalid onboarding payload.");
+        }
+
+        const { name, username, bio, profile } = parsedPayload.data;
+
+        let existingUsername: User | null = null;
+        if (username) {
+            existingUsername = await prisma.user.findUnique({ where: { username } });
+        }
+
+        if (existingUsername && existingUsername.id !== id) {
+            throw new Error("Username is already taken by another account.");
+        }
+
+        const updateData: any = {};
+        if (name !== undefined) updateData.name = name;
+        if (username !== undefined) updateData.username = username;
+        if (bio !== undefined) updateData.bio = bio;
+        if (profile !== undefined) updateData.profile = profile;
+
+        const user = await prisma.user.update({ where: { id }, data: updateData });
+
+        return user;
+    }, "updateUser");
 
     return !result.success ? res.status(400).json(result) : res.status(200).json(result);
 }
@@ -65,6 +92,10 @@ export async function getUser(req: Request, res: Response) {
 
 export async function searchUser(req: Request, res: Response) {
     const result = await wrapper(async () => {
+        const id = req.userId;
+
+        if (!id) throw new Error("Unauthorized. Login First");
+
         const name = req.query.name as string | undefined;
         const username = req.query.username as string | undefined;
 
@@ -86,6 +117,7 @@ export async function searchUser(req: Request, res: Response) {
                           }
                         : {},
                 ],
+                NOT: { id },
             },
         });
 

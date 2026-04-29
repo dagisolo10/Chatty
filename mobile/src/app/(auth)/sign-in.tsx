@@ -11,10 +11,6 @@ import { Mail, EyeOff, Eye, Lock } from "lucide-react-native";
 import { Button, Input, NavLink } from "@/components/ui/interactive";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in";
 
-const token = process.env.EXPO_PUBLIC_TOKEN!;
-
-if (!token) throw new Error("Add token to the .env file");
-
 export default function SignIn() {
     const router = useRouter();
     const { mutedForeground, opaqueDestructive } = useThemeColors();
@@ -78,7 +74,7 @@ export default function SignIn() {
     };
 
     return (
-        <Screen noSafeArea onTab className="justify-center gap-4">
+        <Screen noSafeArea className="justify-center gap-4">
             <View>
                 <Text className="h1">Login to Your</Text>
                 <Text className="h1">Account</Text>
@@ -97,7 +93,12 @@ export default function SignIn() {
                     <Lock color={iconErrStyle.password} size={18} />
                 </View>
 
-                <Button size={"icon"} variant={"ghost"} className={cn(password ? "block" : "hidden", "absolute top-1/2 right-2 -translate-y-1/2")} onPress={() => setPasswordVisible((visible) => !visible)}>
+                <Button
+                    size={"icon"}
+                    variant={"ghost"}
+                    className={cn(password ? "block" : "hidden", "absolute top-1/2 right-2 -translate-y-1/2")}
+                    onPress={() => setPasswordVisible((visible) => !visible)}
+                >
                     {passwordVisible ? <EyeOff color={mutedForeground} size={16} /> : <Eye color={mutedForeground} size={16} />}
                 </Button>
             </View>

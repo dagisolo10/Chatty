@@ -14,10 +14,6 @@ import { Button, Input, NavLink } from "@/components/ui/interactive";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in";
 import PasswordRequirements from "@/components/auth/password-requirement";
 
-const token = process.env.EXPO_PUBLIC_TOKEN!;
-
-if (!token) throw new Error("Add token to the .env file");
-
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function SignUp() {
@@ -92,7 +88,7 @@ export default function SignUp() {
     };
 
     return (
-        <Screen noSafeArea onTab className="justify-center gap-8">
+        <Screen noSafeArea className="justify-center gap-8">
             <View>
                 <Text className="h1">Create Your</Text>
                 <Text className="h1">Account</Text>
@@ -106,12 +102,23 @@ export default function SignUp() {
             </View>
 
             <View className="relative">
-                <Input value={password} placeholder="Min. 8 characters" secureTextEntry={!passwordVisible} className={cn("pl-14", inputErrStyle.password)} onChangeText={(val) => handlePasswordChange(val)} />
+                <Input
+                    value={password}
+                    placeholder="Min. 8 characters"
+                    secureTextEntry={!passwordVisible}
+                    className={cn("pl-14", inputErrStyle.password)}
+                    onChangeText={(val) => handlePasswordChange(val)}
+                />
                 <View className="absolute top-1/2 left-4 -translate-y-1/2">
                     <Lock color={iconErrStyle.password} size={18} />
                 </View>
 
-                <Button size={"icon"} variant={"ghost"} onPress={() => setPasswordVisible((visible) => !visible)} className={cn(password ? "block" : "hidden", "absolute top-1/2 right-2 -translate-y-1/2")}>
+                <Button
+                    size={"icon"}
+                    variant={"ghost"}
+                    onPress={() => setPasswordVisible((visible) => !visible)}
+                    className={cn(password ? "block" : "hidden", "absolute top-1/2 right-2 -translate-y-1/2")}
+                >
                     {passwordVisible ? <EyeOff color={mutedForeground} size={16} /> : <Eye color={mutedForeground} size={16} />}
                 </Button>
             </View>

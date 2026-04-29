@@ -10,13 +10,15 @@ import { Message, Room, User } from "@/types/model";
 import { ClientToServerEvents, ServerToClientEvents } from "@/types/socket-events";
 import { MessageSendResponse, RoomResponse, RoomsResponse } from "@/types/response";
 
+type WebSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
+
 interface RoomStore {
     rooms: Room[];
     messages: Message[];
     onlineUsers: string[];
     pendingUser: User | null;
     typingUsers: Record<string, string[]>;
-    socket: Socket<ServerToClientEvents, ClientToServerEvents> | null;
+    socket: WebSocket | null;
 
     getRooms: () => Promise<void>;
     getConversation: (roomId: string) => Promise<void>;
@@ -57,12 +59,20 @@ const useRoomStore = create<RoomStore>((set, get) => ({
     },
 
     connectSocket: () => {
-        const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(resolveBaseUrl(), { transports: ["websocket"] });
+        let socket: WebSocket;
+
+        const existing = get().socket;
+        if (existing) {
+            socket = existing;
+        } else {
+            socket = io(resolveBaseUrl(), { transports: ["websocket"] });
+        }
 
         socket.on("connect", () => {
             const user = useAuthStore.getState().user;
             if (user) {
-                set((state) => ({ onlineUsers: [...state.onlineUsers, user.id] }));
+                // Option A: Optimistic update (optional)
+                // set((state) => ({ onlineUsers: Array.from(new Set([...state.onlineUsers, user.id])) }));
                 socket.emit("isOnline", user);
             }
         });
@@ -71,7 +81,15 @@ const useRoomStore = create<RoomStore>((set, get) => ({
             set({ onlineUsers: userIds });
         });
 
-        socket.on("newMessage", (message) => {
+        socket.on("newMessage", (message, roomId) => {
+            const currentMessages = get().messages;
+
+            const activeRoomId = currentMessages.length > 0 ? currentMessages[0].roomId : null;
+            if (message.roomId !== activeRoomId) return;
+
+            const exists = currentMessages.some((msg) => msg.id === message.id);
+            if (exists) return;
+
             set((state) => ({ messages: [...state.messages, message] }));
         });
 
@@ -87,7 +105,7 @@ const useRoomStore = create<RoomStore>((set, get) => ({
             set((state) => ({
                 typingUsers: {
                     ...state.typingUsers,
-                    [roomId]: [...(state.typingUsers[roomId] || []), userId],
+                    [roomId]: Array.from(new Set([...(state.typingUsers[roomId] || []), userId])),
                 },
             }));
         });
@@ -144,7 +162,13 @@ const useRoomStore = create<RoomStore>((set, get) => ({
             const data = res.data;
             if (!data.success) throw new Error(data.error);
 
-            set((state) => ({ messages: [...state.messages, data.data.message] }));
+            const newMessage = data.data.message;
+
+            set((state) => {
+                const exists = state.messages.some((msg) => msg.id === newMessage.id);
+                if (exists) return state;
+                return { messages: [...state.messages, newMessage] };
+            });
 
             return data;
         } catch (err: any) {
@@ -165,10 +189,12 @@ const useRoomStore = create<RoomStore>((set, get) => ({
             const socket = get().socket;
             const currentMessages = get().messages;
 
-            if (socket && currentMessages.length > 0) {
-                const previousRoomId = currentMessages[0].roomId;
-                if (previousRoomId !== roomId) {
-                    socket.emit("leaveRoom", previousRoomId);
+            if (socket) {
+                if (currentMessages.length > 0) {
+                    const previousRoomId = currentMessages[0].roomId;
+                    if (previousRoomId !== roomId) {
+                        socket.emit("leaveRoom", previousRoomId);
+                    }
                 }
                 socket.emit("joinRoom", roomId);
             }

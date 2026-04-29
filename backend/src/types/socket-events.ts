@@ -1,7 +1,7 @@
 import type { Message, User } from "@prisma/client";
 
 export interface ServerToClientEvents {
-    newMessage: (message: Message) => void;
+    newMessage: (message: Message, roomId: string) => void;
     onlineUsers: (userIds: string[]) => void;
     messageEdited: (message: Message) => void;
     messageDeleted: (messageId: string, roomId: string) => void;

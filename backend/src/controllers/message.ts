@@ -90,7 +90,7 @@ export async function sendMessage(req: Request, res: Response) {
         const io: SocketServer<ClientToServerEvents, ServerToClientEvents> = req.app.get("io");
 
         if (io) {
-            io.to(result.roomId).emit("newMessage", result.message);
+            io.to(result.roomId).emit("newMessage", result.message, result.roomId);
         }
 
         return result;

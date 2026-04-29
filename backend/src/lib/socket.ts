@@ -60,7 +60,7 @@ export default function initializeSocket(server: HttpServer) {
 
         socket.on("sendMessage", (newMessage: Message, roomId: string) => {
             if (socket.data.userId !== newMessage.senderId) return;
-            io.to(roomId).emit("newMessage", newMessage);
+            io.to(roomId).emit("newMessage", newMessage, roomId);
         });
 
         socket.on("editMessage", (updatedMessage: Message, roomId: string) => {

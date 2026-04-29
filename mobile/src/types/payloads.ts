@@ -1,19 +1,20 @@
 import { MessageType, RoomType } from "./model";
 
-export interface CreateMessagePayload {
+interface BaseMessagePayload {
     message: string;
     messageType: MessageType;
-    roomId: string;
 }
 
-export interface CreateRoomPayload {
+export type MessagePayload = (BaseMessagePayload & { roomId: string; recipientId?: never }) | (BaseMessagePayload & { recipientId: string; roomId?: never });
+
+export interface RoomPayload {
     name?: string;
     type: RoomType;
     inviteCode?: string;
     memberIds: string[];
 }
 
-export interface CreateUserPayload {
+export interface UserPayload {
     name: string;
     username: string;
     bio?: string;

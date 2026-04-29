@@ -1,4 +1,4 @@
-import type { Message, User } from "@prisma/client";
+import { Message, User } from "./model";
 
 export interface ServerToClientEvents {
     newMessage: (message: Message, roomId: string) => void;

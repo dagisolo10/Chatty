@@ -95,6 +95,11 @@ export async function getConversation(req: Request, res: Response) {
         if (!userId) throw new Error("Unauthorized");
 
         const result = await prisma.$transaction(async (tx) => {
+            await tx.member.updateMany({
+                where: { roomId, userId },
+                data: { lastReadAt: new Date() },
+            });
+
             const room = (await tx.room.findFirst({
                 where: {
                     id: roomId,
@@ -108,12 +113,7 @@ export async function getConversation(req: Request, res: Response) {
 
             if (!room) throw new Error("Room not found");
 
-            const updatedRoom = await tx.member.updateMany({
-                where: { roomId, userId },
-                data: { lastReadAt: new Date() },
-            });
-
-            return updatedRoom;
+            return room;
         });
 
         return result;

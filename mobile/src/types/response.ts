@@ -1,5 +1,15 @@
 import { Message, Room, User } from "./model";
 
+export interface MessageSendResponse {
+    data: {
+        roomId: string;
+        message: Message & {
+            user: User;
+        };
+    };
+    error?: string;
+    success: boolean;
+}
 export interface MessageResponse {
     data: Message;
     error?: string;
@@ -8,6 +18,18 @@ export interface MessageResponse {
 
 export interface UserResponse {
     data: User;
+    error?: string;
+    success: boolean;
+}
+
+export interface UserSearchResponse {
+    data: User[];
+    error?: string;
+    success: boolean;
+}
+
+export interface RoomResponse {
+    data: Room;
     error?: string;
     success: boolean;
 }

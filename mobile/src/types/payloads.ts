@@ -1,19 +1,20 @@
 import { MessageType, RoomType } from "./model";
 
-export interface CreateMessagePayload {
+export interface MessagePayload {
     message: string;
     messageType: MessageType;
-    roomId: string;
+    roomId?: string;
+    recipientId?: string;
 }
 
-export interface CreateRoomPayload {
+export interface RoomPayload {
     name?: string;
     type: RoomType;
     inviteCode?: string;
     memberIds: string[];
 }
 
-export interface CreateUserPayload {
+export interface UserPayload {
     name: string;
     username: string;
     bio?: string;

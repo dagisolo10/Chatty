@@ -32,7 +32,7 @@ export async function sendMessage(req: Request, res: Response) {
                     include: { members: true },
                 });
             } else if (!roomId && recipientId) {
-                const privateRoomKey = [senderId, recipientId].sort().join("|");
+                const privateRoomKey = [senderId, recipientId].sort().join(" | ");
 
                 existingRoom = await tx.room.findUnique({
                     where: { privateKey: privateRoomKey },
@@ -157,7 +157,7 @@ export async function deleteMessage(req: Request, res: Response) {
         const isMember = existingMessage.room.members.some((m) => m.userId === senderId);
         if (!isMember) throw new Error("Not a member of this room");
 
-        await prisma.message.delete({ where: { id } });
+        const deletedMessage = await prisma.message.delete({ where: { id } });
 
         const io: SocketServer<ClientToServerEvents, ServerToClientEvents> = req.app.get("io");
 
@@ -165,7 +165,7 @@ export async function deleteMessage(req: Request, res: Response) {
             io.to(existingMessage.roomId).emit("messageDeleted", existingMessage.id, existingMessage.roomId);
         }
 
-        return { id };
+        return deletedMessage;
     }, "deleteMessage");
 
     return !result.success ? res.status(400).json(result) : res.status(200).json(result);

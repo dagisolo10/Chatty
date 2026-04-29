@@ -5,10 +5,10 @@ import { useAuth } from "@clerk/expo";
 import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import useAuthStore from "@/store/auth-store";
+import { UserPayload } from "@/types/payloads";
 import { UserResponse } from "@/types/response";
 import useThemeColors from "@/hooks/use-colors";
 import * as ImagePicker from "expo-image-picker";
-import { CreateUserPayload } from "@/types/payloads";
 import { ActivityIndicator, Image } from "react-native";
 import { ErrorMessage } from "@/components/ui/screen-ui";
 import { Button, Input } from "@/components/ui/interactive";
@@ -72,7 +72,7 @@ export default function Onboarding() {
             const token = await getToken();
             if (!token) return setError("Your session has expired. Please sign in again.");
 
-            const payload: CreateUserPayload = { name: name.trim(), username, profile: profile || undefined, bio: bio.trim() || undefined };
+            const payload: UserPayload = { name: name.trim(), username, profile: profile || undefined, bio: bio.trim() || undefined };
             const auth = { headers: { Authorization: `Bearer ${token}` } };
 
             const res = await api.post<UserResponse>("/auth/sync", payload, auth);
@@ -148,7 +148,14 @@ export default function Onboarding() {
 
             <Field label="Username">
                 <View className="relative">
-                    <Input value={username} className={cn("pl-12", inputErrStyle.username)} autoCorrect={false} autoCapitalize="none" placeholder="your_handle" onChangeText={(val) => handleUserNameChange(val)} />
+                    <Input
+                        value={username}
+                        className={cn("pl-12", inputErrStyle.username)}
+                        autoCorrect={false}
+                        autoCapitalize="none"
+                        placeholder="your_handle"
+                        onChangeText={(val) => handleUserNameChange(val)}
+                    />
                     <View className="absolute top-0 left-4 h-14 justify-center">
                         <AtSign color={iconErrStyle.username} size={18} />
                     </View>
